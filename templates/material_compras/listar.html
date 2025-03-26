@@ -1,0 +1,185 @@
+{% extends '../base.html' %}
+
+{% block index %}
+
+<div class="container">
+    <h1 class="text-center">Lista de Materiales</h1>
+    <form action="{% url 'listar' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date" style="width: 30%;" id="fecha_inicio" name="fecha_inicio"
+                        class="form-control form-control-sm" value="{{ request.GET.fecha_inicio }}">
+                </div>
+            </div>
+            <div class="col-6">
+                <div>
+                    <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                    <input type="date" style="width: 30%;" id="fecha_fin" name="fecha_fin"
+                        class="form-control form-control-sm" value="{{ request.GET.fecha_fin }}">
+                </div>
+            </div>
+        </div>
+
+
+
+        <button type="submit" class="btn btn-primary btn-sm mt-3">buscar</button>
+    </form>
+
+
+    <table id="compras" class="table table-bordered table-striped mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Item</th>
+                <th>Descripción</th>
+                <th>Unidad Manejo</th>
+
+                <th>Secretaria</th>
+                <th>Unidad</th>
+                <th>Oficina</th>
+                <th>Proveedor</th>
+                <th>Stock</th>
+                <th>Fecha</th>
+
+                <th>Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in data %}
+            <tr>
+                <td>{{ material.item }}</td>
+                <td>{{ material.descripcion|default:"" }}</td>
+                <td>{{ material.unidad_manejo|default:"" }}</td>
+
+                <td>{{ material.secretaria|default:"" }}</td>
+                <td>{{ material.unidad|default:"" }}</td>
+                <td>{{ material.oficina|default:"" }}</td>
+                <td>{{ material.proveedor.empresa}} -{{ material.proveedor.persona.nombre }}
+                    {{material.proveedor.persona.apellidos}}</td>
+                <td>{{ material.cantidad|default_if_none:0 }}</td>
+                <td>{{ material.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                <td> <button class="btn btn-success entregar-btn" data-id="{{ material.item }}"
+                        data-descripcion="{{ material.descripcion }}">
+                        Entregar
+                    </button> </td>
+
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <!-- Modal para Entrega -->
+    <div class="modal fade" id="entregaModal" tabindex="-1" aria-labelledby="entregaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark"> <!-- Aplica texto negro a todo el modal -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="entregaModalLabel">Realizar Entrega</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="entregaForm">
+                        <input type="hidden" id="material_id">
+                        <div class="mb-3">
+                            <label for="cantidad_entrega" class="form-label text-dark">Cantidad a Entregar</label>
+                            <input type="number" class="form-control" id="cantidad_entrega" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Confirmar Entrega</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<script>
+    // Establecer fecha actual en los campos de fecha de inicio y fin
+    document.addEventListener('DOMContentLoaded', function () {
+        const fechaInicio = document.getElementById('fecha_inicio');
+        const fechaFin = document.getElementById('fecha_fin');
+
+        const today = new Date();
+        today.setDate(today.getDate() - 1);
+        const formattedDate = today.toISOString().split('T')[0];
+
+        if (fechaInicio && !fechaInicio.value) {
+            fechaInicio.value = formattedDate;
+        }
+        if (fechaFin && !fechaFin.value) {
+            fechaFin.value = formattedDate;
+        }
+    });
+
+    $(document).ready(function () {
+
+        $('#compras').DataTable({
+            paging: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'excel', 'pdf', 'print'
+            ],
+            language: {
+                paginate: {
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                }
+            }
+        });
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const entregaModal = new bootstrap.Modal(document.getElementById('entregaModal'));
+        let selectedMaterialId = null;
+
+        // Capturar clic en botón "Entregar"
+        document.querySelectorAll(".entregar-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                selectedMaterialId = this.getAttribute("data-id");
+                document.getElementById("material_id").value = selectedMaterialId;
+                entregaModal.show();
+            });
+        });
+
+        // Manejar el formulario de entrega
+        document.getElementById("entregaForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const cantidad = document.getElementById("cantidad_entrega").value;
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            if (cantidad <= 0) {
+                alert("Ingrese una cantidad válida.");
+                return;
+            }
+            const data = new FormData()
+            data.append('cantidad_entrega', cantidad)
+            data.append('id', selectedMaterialId)
+            axios.post("{% url 'realizar_entrega_menor' %} ", data,
+                {
+                    headers: {
+                        "X-CSRFToken": csrftoken // Agregar el token en los headers
+                    }
+                }
+            )
+                .then((result) => {
+                    console.log(result);
+
+                }).catch((err) => {
+                    console.log(err);
+
+                });
+            console.log("Entregando material ID:", selectedMaterialId, "Cantidad:", cantidad);
+            // Aquí puedes hacer una petición AJAX para enviar los datos al backend
+
+            entregaModal.hide();
+        });
+    });
+</script>
+{% endblock js %}

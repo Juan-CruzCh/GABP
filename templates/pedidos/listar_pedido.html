@@ -1,0 +1,56 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+     th{
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+    h2{
+        color: white;
+         font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <div class="container mt-5">
+        <h2>Tabla de Pedidos</h2>
+        <form action="{% url 'listando_pedidos' %}" method="GET">
+            <select id="num" name="page">
+                <option name="page" value="10">10</option>
+                <option name="page" value="20">20</option>
+                <option name="page" value="50">50</option>
+                <option name="page" value="100">100</option>
+                <option name="page" value="200">200</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+        </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Nombre completo</th>
+                    <th>Unidad</th>
+                    <th>Fecha</th>
+                    <th>Informacion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in data %}
+                <tr>
+                    <td>{{ pedido.numero_pedido}}</td>
+                    <td> {{ pedido.usuario.persona.nombre }} {{ pedido.usuario.persona.apellidos}} </td>
+                    <td>{{ pedido.usuario.unidad.nombre}}</td>
+                    <td>{{ pedido.fecha_pedido}}</td>
+                    <td><a href="{% url 'informacion_pedido' pedido.numero_pedido %}"
+                            class="btn btn-info btn-sm">Info</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'paginador/paginador.html' %}
+</div>
+
+{% endblock index %}

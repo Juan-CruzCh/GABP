@@ -1,0 +1,93 @@
+{% extends '../base.usuarios.html' %}
+
+{% block usuario %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+    <div class="text-center">
+        <h2>{{ usuario.unidad.nombre }}</h2>
+
+    </div>
+    <form action="{% url 'listar_pedidos_unidad' %}" method="GET">
+        <select id="num" name="limit">
+            <option name="page" value="10">10</option>
+            <option name="page" value="20">20</option>
+            <option name="page" value="50">50</option>
+            <option name="page" value="100">100</option>
+            <option name="page" value="200">200</option>
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>C.I</th>
+                <th>Nombre completo</th>
+                <th>Oficina</th>
+                <th>Fecha</th>
+
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in data %}
+            <tr>
+                <td>{{ pedido.numero_pedido}}</td>
+                <td>{{ pedido.usuario.persona.cedula_identidad }}</td>
+                <td>{{ pedido.usuario.persona.nombre }} {{ pedido.usuario.persona.apellidos }}</td>
+                <td>{{ pedido.usuario.oficina.nombre }}</td>
+
+
+
+                <td>{{ pedido.fecha_pedido|date:"m/d/y" }}</td>
+
+                <td>
+                    <a class="btn btn-success btn-sm" href="{% url 'pedido_numero' pedido.numero_pedido %}">Ver
+                        pedidos</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'paginador/paginador.html' %}
+</div>
+
+
+
+{% endblock usuario %}

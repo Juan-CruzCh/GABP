@@ -1,0 +1,127 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+<style>
+    /* Oculta elementos con la clase 'no-print' al imprimir */
+    @media print {
+        .no-print {
+            display: none;
+        }
+
+        .costo_asignar {
+            display: none;
+
+        }
+    }
+
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+
+    .modal-content {
+        background-color: #0E9097 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+
+    h5 {
+        color: white;
+        font-weight: bold;
+
+    }
+</style>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Código Pedido</th>
+            <th>Descripción</th>
+            <th>Material</th>
+            <th>Cantidad de pedido</th>
+            <th>Cantidad entrega</th>
+            <th>Partida presupuestada</th>
+            <th>Unidad</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <!-- <th>Acciones</th>-->
+        </tr>
+    </thead>
+    <tbody>
+        {% for pedido in data %}
+        <tr>
+            <td>{{ pedido.material.codigo }}</td>
+            <td>{{ pedido.descripcion }}</td>
+            <td>{{ pedido.material.nombre }}</td>
+            <td>{{ pedido.cantidad_pedida }}</td>
+            <td>{{ pedido.cantidad_entrega }}</td>
+            <td>{{ pedido.partida_presupuestada }}</td>
+            <td>{{ pedido.costo_unidad }}</td>
+            <td>{{ pedido.costo_total }}</td>
+
+
+            <td>{{ pedido.fecha_pedido|date:"m/d/y" }}</td>
+            <!--  <td>
+                <button id="costo_asignar" type="button" onclick="asignar_costo('{{ pedido.id }}')"
+                    class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Unidad
+                </button>
+            </td>-->
+        </tr>
+
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="6" style="text-align:right">Total General:</th>
+
+            <th> {{costo_unidad}} </th>
+            <th> {{costo_total}} </th>
+            <th></th>
+
+        </tr>
+    </tfoot>
+</table>
+
+<div class="text-center mb-3">
+    <a href="{% url 'imprimir_costo' data.0.numero_pedido %}" class="btn btn-primary">
+        <i class="fas fa-print"></i> Imprimir
+    </a>
+</div>
+
+
+
+{% endblock index %}
+
+{% block js %}
+<script>
+    function imprimirTabla() {
+        var tabla = document.querySelector('table');
+        var tablaClonada = tabla.cloneNode(true);
+        var filas = tablaClonada.querySelectorAll('tr');
+
+        filas.forEach(function (fila) {
+
+            var celdas = fila.querySelectorAll('td, th');
+
+
+            if (celdas.length > 0) {
+                celdas[celdas.length - 1].remove();
+            }
+        });
+
+        var ventanaImpresion = window.open('', '_blank');
+
+        ventanaImpresion.document.write('<html><head><title>Imprimir Tabla</title>');
+        ventanaImpresion.document.write('<style>table {width: 100%; border-collapse: collapse;}');
+        ventanaImpresion.document.write('th, td {border: 1px solid black; padding: 8px; text-align: left;}');
+        ventanaImpresion.document.write('</style></head><body>');
+        ventanaImpresion.document.write(tablaClonada.outerHTML);
+        ventanaImpresion.document.write('</body></html>');
+
+
+        ventanaImpresion.document.close();
+        ventanaImpresion.print();
+    }
+</script>
+
+{% endblock js %}

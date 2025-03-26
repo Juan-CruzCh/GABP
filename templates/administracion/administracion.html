@@ -1,0 +1,181 @@
+{% extends '../base.html' %}
+
+{% block index %}
+
+<style>
+    h1 {
+
+
+        color: white;
+        font-weight: bold;
+    }
+
+
+
+    .container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .profile-card {
+        background-color: #0E9097;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .profile-card h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: white;
+        text-align: center;
+    }
+
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-item {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .profile-label {
+        font-weight: bold;
+        color: #555;
+        width: 150px;
+    }
+
+    .profile-value {
+        color: #333;
+    }
+
+    .profile-item:nth-child(odd) {
+        background-color: #b5b5b5;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .profile-image {
+        width: 100px;
+        /* Ajusta el tamaño según lo que necesites */
+        height: 100px;
+        /* Mismo tamaño que el ancho para hacerlo circular */
+        border-radius: 50%;
+        /* Esto hace que la imagen sea circular */
+        object-fit: cover;
+        /* Asegura que la imagen cubra todo el contenedor */
+    }
+
+    .placeholder-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        /* Forma circular */
+        background-color: #ccc;
+        display: flex;
+        /* Para centrar contenido dentro del placeholder */
+        justify-content: center;
+        align-items: center;
+        color: #666;
+
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="profile-card">
+        <h1>Perfil del Usuario</h1>
+        <div class="profile-info">
+            <div class="profile-item">
+                {% if user.foto %}
+                <img src="{{ user.foto.url }}" alt="foto user" class="profile-image">
+                {% else %}
+                <div class="placeholder-image">Sin Imagen</div>
+                {% endif %}
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Nombre:</span>
+                <span class="profile-value">{{ user.persona.nombre }} {{ user.persona.apellidos }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Correo Electrónico:</span>
+                <span class="profile-value">{{ user.email }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Nombre de Usuario:</span>
+                <span class="profile-value">{{ user.username }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Secretaria:</span>
+                <span class="profile-value">{{ user.unidad.secretaria }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Unidad:</span>
+                <span class="profile-value">{{ user.unidad.nombre }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Oficina:</span>
+                <span class="profile-value">{{ user.oficina.nombre }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Cargo:</span>
+                <span class="profile-value">
+                    {% if user.cargo == "Encargado_unidad" %}
+                    Encargado unidad
+                    {% elif user.cargo == "Encargado_oficina" %}
+                    Encargado oficina
+                    {% else %}
+                    {{ user.cargo }}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <!--  <div class="row mb-4">
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-custom-blue text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos</h5>
+                    <p class="card-text">123</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-custom-green text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Materiales</h5>
+                    <p class="card-text">456</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-custom-orange text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="card-text">789</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-custom-red text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Proveedores</h5>
+                    <p class="card-text">101</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+</div>
+
+{% endblock index %}

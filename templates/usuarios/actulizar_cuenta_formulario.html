@@ -1,0 +1,531 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+<style>
+    .profile-image {
+        width: 50px;
+        /* Ajusta el ancho según lo que necesites */
+        height: 50px;
+        /* Asegúrate de que el alto sea igual al ancho para hacerlo circular */
+        border-radius: 50%;
+        /* Esto hace que la imagen sea circular */
+        object-fit: cover;
+        /* Asegura que la imagen se ajuste correctamente */
+    }
+
+    .current-image {
+        margin-bottom: 15px;
+        /* Espaciado para separar la imagen del formulario */
+    }
+    .container {
+    background-color: rgb(14, 144, 153);
+    padding: 20px;
+    border-radius: 5px; /* Opcional para bordes redondeados */
+    color: white; /* Cambia el color del texto si es necesario */
+    font-weight: bold;
+}
+.form-control, 
+.form-select, 
+textarea {
+    background-color: #6DA5C0; /* Fondo rojo claro */
+    color: #020405; /* Texto rojo oscuro */
+   
+}
+
+
+</style>
+<div class="container">
+    <div class="text-center">
+        <h2>Añadir usuarios</h2>
+    </div>
+    <form action="{% url 'actulizar_cuenta_usuario' user.id persona.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+
+            <div class="col-6">
+                <label for="{{ form_usuario.item.id_for_label }}"> {{form_usuario.foto.label}}:
+                </label>
+
+                {% if form_usuario.instance.foto %}
+                <img src="{{ form_usuario.instance.foto.url }}" alt="Imagen de perfil" class="profile-image">
+                {% else %}
+                {{ form_usuario.foto }}
+                {% endif %}
+
+                {{ form_persona }}
+                <label for="{{ form_usuario.email.id_for_label }}"> {{ form_usuario.email.label}}: </label>
+                {{ form_usuario.email }}
+                {{form_usuario.email.errors}}
+                <label for="{{ form_usuario.item.id_for_label }}"> {{form_usuario.item.label}}:
+                </label>
+                {{ form_usuario.item}}
+                {{form_usuario.item.errors}}
+
+            </div>
+            <div class="col-6">
+                <span>Seleccione su unidad</span>
+                <div class="row">
+                    <div class="col-12">
+                        <input type="hidden" id="id_unidad" value="{{ user.unidad.id }}">
+                        <select name="unidad" id="selectUnidad" class="form-control"></select>
+                    </div>
+                    <div class="col-12 pt-3 text-center ">
+                        <button onclick="listar_unidades()" type="button" class="btn btn-primary btn-sm">
+                            Actualizar
+                        </button>
+                        <button onclick="Listar_secretarias()" type="button" class="btn btn-success btn-sm"
+                            data-toggle="modal" data-target="#modalUnidad">
+                            Crear unidad
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                            data-target="#exampleModal">
+                            Secretaría
+                        </button>
+                    </div>
+
+
+                </div>
+
+
+                <span>Seleccione la oficina</span>
+                <div class="row">
+                    <div class="col-12">
+                        <input type="hidden" id="id_oficina_value" value="{{ user.oficina.id }}">
+                        <select name="oficina" id="selectOficinas" class="form-control"></select>
+                    </div>
+                    <div class="col-4">
+                        <button onclick="listar_unidades2() " type="button" class="btn btn-primary btn-sm"
+                            data-toggle="modal" data-target="#example_oficina">
+                            Crear oficinas
+                        </button>
+                    </div>
+
+                </div>
+
+
+                <label for="{{ form_usuario.rol.id_for_label }}"> {{form_usuario.rol.label}}:
+                </label>
+                {{ form_usuario.rol }}
+                {{form_usuario.rol.errors}}
+                <div>
+                    <span>Seleccionar permisos solo para Almacen</span> <br>
+                    {{ form_usuario.crear.label}}
+                    {{ form_usuario.crear}}
+                    {{ form_usuario.editar.label}}
+                    {{ form_usuario.editar}}
+                    {{ form_usuario.eliminar.label}}
+                    {{ form_usuario.eliminar}}
+
+                </div>
+                <label for="{{ form_usuario.encargado_unidad.id_for_label }}"> {{form_usuario.encargado_unidad.label}}
+                </label>
+                {{ form_usuario.cargo}}
+                {{form_usuario.encargado_unidad.errors}}
+            </div>
+
+            <div class="text-center mt-3">
+                <button class="btn btn-success" type="submit">Guardar</button>
+
+            </div>
+    </form>
+
+
+</div>
+
+<div class="modal fade" id="modalUnidad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Unidad</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col-auto me-2 ms-2">
+                    <label for="selectSecretaria">Secretaría</label>
+                    <select name="secretaria" id="selectSecretaria" class="form-control">
+                        <!-- Las opciones se llenarán dinámicamente -->
+                    </select>
+                    <form id="unidadform2" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="id_secretaria">Nombre unidad</label>
+                                <input type="text" id="id_secretaria" name="unidad" class="form-control" required>
+                                <span id="error_unidad2"></span>
+                            </div>
+                            <br>
+                            <span id="success"></span>
+
+                            <div class="col-2" style="margin-top: 28px;">
+                                <button id="undiad_secretaria" class="btn btn-success btn-sm"
+                                    type="submit">Añadir</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Secreatarias</h5>
+
+            </div>
+            <div class="modal-body">
+                <div class="col-auto me-2 ms-2">
+                    <form id="form_secretaria" action="{% url 'crear_secretaria_listar' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="id_secretaria">Nombre secretaria</label>
+                                <input type="text" id="id_secretaria" name="secretaria" class="form-control" required>
+                                <span id="error"></span>
+                            </div>
+                            <div class="col-2" style="margin-top: 28px;">
+                                <button id="guardar_secretaria" class="btn btn-success btn-sm"
+                                    type="submit">Añadir</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table class="table ">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Secreataria</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_table">
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="example_oficina" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">oficina</h5>
+
+            </div>
+            <div class="modal-body">
+                <div class="col-auto me-2 ms-2">
+                    <form id="form_oficina" action="{%url 'crear_oficinas' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <label for="selectUnidad">Unidad</label>
+                            <div class="col-12">
+                                <select name="unidad" id="selectUnidad2" class="form-control"></select>
+
+
+                            </div>
+
+                            <div class="col-6">
+                                <label for="id_oficina">Nombre de oficina</label>
+                                <input type="text" id="id_oficina" name="oficina" class="form-control" required>
+                                <span id="error_oficina"></span>
+                                <span id="success_oficina"></span>
+                            </div>
+                            <div class="col-2" style="margin-top: 28px;">
+                                <button id="guardar_oficina" class="btn btn-success btn-sm"
+                                    type="submit">Añadir</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock index %}
+
+{% block js %}
+
+
+<script>
+    const crearSecretariaUrl = "{% url 'crear_secretaria_listar' %}";
+
+
+
+    function listar_unidades2() {
+
+
+        axios.get("{% url 'unidad' %}")
+            .then((resultado) => {
+                if (resultado.data.data) {
+                    console.log('unidad hola', resultado.data.data);
+
+                    const selectUnidad = document.getElementById('selectUnidad2');
+                    selectUnidad.innerHTML = '';
+                    resultado.data.data.forEach(element => {
+                        const option = document.createElement('option');
+                        option.value = element.id;
+                        option.textContent = element.nombre;
+
+
+
+                        selectUnidad.appendChild(option);
+                    });
+
+
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', listar_unidades2)
+
+    function listar_unidades() {
+        const unidad_usuario = document.getElementById('id_unidad').value;
+        axios.get("{% url 'unidad' %}")
+            .then((resultado) => {
+                if (resultado.data.data) {
+
+                    const selectUnidad = document.getElementById('selectUnidad');
+                    selectUnidad.innerHTML = '';
+                    resultado.data.data.forEach(element => {
+                        const option = document.createElement('option');
+                        option.value = element.id;
+                        option.textContent = element.nombre;
+                        if (element.id.toString() === unidad_usuario.toString()) {
+                            option.selected = true;
+                        }
+                        selectUnidad.appendChild(option);
+                    });
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+
+            });
+    }
+
+
+
+    document.getElementById('undiad_secretaria').addEventListener('click', (e) => {
+        e.preventDefault()
+        const formulario = document.getElementById('unidadform2');
+        const selectSecretaria = document.getElementById('selectSecretaria');
+        const selected_secretaria_id = selectSecretaria.value;
+
+        const formData = new FormData(formulario);
+
+        formData.append('secretaria_id', selected_secretaria_id);
+
+        axios.post("{% url 'Crear_unidad_secretaria' %}", formData)
+            .then((resultado) => {
+
+                if (resultado.data.data) {
+                    document.getElementById('error_unidad2').innerHTML = ''
+                    document.getElementById('success').innerHTML = 'Guardado'
+                } else if (resultado.data.error) {
+                    document.getElementById('error_unidad2').innerHTML = resultado.data.error
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+
+            })
+
+
+    })
+
+    function Listar_secretarias() {
+        axios.get("{% url 'crear_secretaria_listar' %}",)
+            .then((respuesta) => {
+                if (respuesta.data.data) {
+                    respuesta.data.data.forEach(element => {
+                        const selectSecretaria = document.getElementById('selectSecretaria');
+                        selectSecretaria.innerHTML = '';
+                        respuesta.data.data.forEach(element => {
+                            const option = document.createElement('option');
+                            option.value = element.id;
+                            option.textContent = element.secretaria;
+                            selectSecretaria.appendChild(option);
+                        });
+                    });
+
+                }
+
+            })
+
+            .catch((e) => {
+                console.log(e);
+            })
+
+    }
+
+
+
+
+
+
+    /*   document.getElementById('undiad_secretaria').addEventListener('click', (e) => {
+           e.preventDefault()
+           const formulario = document.getElementById('unidadform2');
+           const selectSecretaria = document.getElementById('selectSecretaria');
+           const selected_secretaria_id = selectSecretaria.value;
+           const formData = new FormData(formulario);
+           formData.append('secretaria_id', selected_secretaria_id);
+           axios.post('Crear_unidad_secretaria', formData)
+               .then((resultado) => {
+   
+                   if (resultado.data.data) {
+                       document.getElementById('error_unidad2').innerHTML = ''
+                       document.getElementById('success').innerHTML = 'Guardado'
+                   } else if (resultado.data.error) {
+                       document.getElementById('error_unidad2').innerHTML = resultado.data.error
+                   }
+               })
+               .catch((e) => {
+                   alert(e)
+               })
+   
+   
+       })*/
+
+
+
+
+
+    document.getElementById('selectUnidad').addEventListener('click', (e) => {
+        const selectedUnidadId = e.target.value;
+        console.log("hola", selectedUnidadId);
+
+        var baseUrl = "{% url 'oficinas' 0 %}";
+        var url = baseUrl.replace('0', selectedUnidadId);
+
+        axios.get(url)
+            .then((resultado) => {
+                if (resultado.data.data) {
+                    const selectOficinas = document.getElementById('selectOficinas');
+                    const id_oficina_value = document.getElementById('id_oficina_value').value
+                    selectOficinas.innerHTML = '';
+                    resultado.data.data.forEach(element => {
+                        const option = document.createElement('option');
+                        option.value = element.id;
+                        option.textContent = element.nombre;
+                        if (id_oficina_value.toString() === element.id.toString()) {
+                            option.selected = true
+                        }
+                        selectOficinas.appendChild(option);
+                    });
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+
+            });
+    });
+
+
+    document.getElementById('guardar_oficina').addEventListener('click', (e) => {
+        e.preventDefault()
+        const formulario = document.getElementById('form_oficina');
+        const select_unidad = document.getElementById('selectUnidad2');
+        const select_unidad_id = select_unidad.value;
+        const formData = new FormData(formulario);
+        formData.append('secretaria_id', select_unidad_id);
+
+        axios.post("{% url 'crear_oficinas' %}", formData)
+            .then((resultado) => {
+                console.log(resultado.data.error);
+                if (resultado.data.data) {
+                    document.getElementById('error_oficina').innerHTML = ''
+                    document.getElementById('success_oficina').innerHTML = 'Guardado'
+                } else if (resultado.data.error) {
+                    document.getElementById('error_oficina').innerHTML = resultado.data.error
+                }
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+
+
+    })
+
+
+    function Listar_secretaria() {
+        axios.get("{% url 'crear_secretaria_listar' %}")
+            .then((respuesta) => {
+                if (respuesta.data.data) {
+
+
+                    const tbody = document.getElementById('tbody_table');
+                    tbody.innerHTML = '';
+                    respuesta.data.data.forEach(element => {
+                        const row = document.createElement('tr');
+                        const name_secretaria = document.createElement('td');
+                        name_secretaria.textContent = element.secretaria; // Ajusta según las propiedades de tus datos
+                        row.appendChild(name_secretaria);
+
+                        const acciones = document.createElement('td');
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Eliminar';
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.onclick = () => eliminar_sercretaria(element.id)
+                        acciones.appendChild(deleteButton);
+                        row.appendChild(acciones);
+
+                        tbody.appendChild(row);
+                    });
+                }
+            })
+
+            .catch((e) => {
+                console.log(e);
+            })
+
+    }
+
+
+    let clickCount = 0;
+    const maxClicks = 2; // Número máximo de veces que quieres ejecutar el intervalo
+
+    const intervalId = setInterval(function () {
+        var button = document.getElementById('selectUnidad');
+        let id = document.getElementById('id_unidad').value;
+        console.log('id click:', id);
+
+        if (id) {
+            function handleClick() {
+                // Aquí puedes definir lo que ocurre al hacer clic
+            }
+
+            button.addEventListener('click', handleClick);
+
+            button.click();
+
+            // Incrementa el contador
+            clickCount++;
+
+            // Si el contador alcanza el número máximo de ejecuciones, detén el intervalo
+            if (clickCount >= maxClicks) {
+                clearInterval(intervalId);
+            }
+        }
+    }, 1000)
+    window.onload = function () {
+        Listar_secretarias()
+        listar_unidades()
+        Listar_secretaria()
+
+    }
+</script>
+
+
+{% endblock js %}

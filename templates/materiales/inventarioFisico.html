@@ -1,0 +1,79 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+    .container {
+        background-color: #0E9097 !important;
+        color: rgb(241, 238, 238) !important;
+        font-weight: bold;
+    }
+
+    .text-center {
+
+        color: #0c0b0b !important;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        background-color: #b5b5b5;
+        /* Fondo rojo claro */
+        color: #020405;
+        /* Texto rojo oscuro */
+
+    }
+
+    .form-control:focus,
+    .form-select:focus,
+    textarea:focus {
+        background-color: #0C6D73;
+        /* Fondo rojo más claro al enfocar */
+        border-color: rgb(3, 30, 41);
+        /* Borde rojo oscuro al enfocar */
+        box-shadow: 0 0 5px rgba(1, 49, 77, 0.5);
+        /* Sombra roja */
+    }
+</style>
+
+<h2 style="text-align: center;">Inventario Fiscio</h2>
+<div class="container mt-4">
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Item</th>
+                    <th>Material</th>
+                    <th>Unidad de manejo</th>
+                    <th>cantidad stock</th>
+                    <th>1ra compra</th>
+
+                    <th>Mat. Entregado</th>
+                    <th>Cantidad stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in data %}
+                <tr>
+                    <td>{{ p.codigo }}</td>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.unidad_manejo }}</td>
+                    <td>{{ p.stock }}</td>
+
+                    <td>{{ p.compra }}</td>
+
+                    <td>{{ p.entrega }}</td>
+                    <td>{{ p.cantidad2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{% endblock index %}
+
+{% block js %}
+
+{% endblock js %}

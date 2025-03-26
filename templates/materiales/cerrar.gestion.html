@@ -1,0 +1,55 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+    h2{
+        color: white;
+         font-weight: bold;
+    }
+</style>
+<div class="container">
+    <h2>Cerrar Gestión</h2>
+    <p class="alert alert-warning">¡Atención! Al cerrar la gestión, todos los materiales con cantidad mayor a 1 se
+        transferirán a la siguiente gestión. Asegúrate de que estás listo para proceder.</p>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="POST" action="{% url 'cerrar_gestion' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="año">Selecciona el año de gestión:</label>
+            <select name="año" id="año" class="form-control" required>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cerrar Gestión</button>
+    </form>
+</div>
+
+<script>
+    // Obtener el año actual
+    const currentYear = new Date().getFullYear();
+    const startYear = 2020; // Cambia esto según necesites
+    const endYear = 2050; // Cambia esto según necesites
+    const select = document.getElementById('año');
+
+    // Generar las opciones de años
+    for (let year = startYear; year <= endYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        select.appendChild(option);
+
+        // Seleccionar el año actual
+        if (year === currentYear) {
+            option.selected = true;
+        }
+    }
+</script>
+{% endblock index %}

@@ -1,0 +1,207 @@
+{% extends '../../base.html' %}
+
+{% block index %}
+<style>
+    .modal-body {
+        background-color: #2A4F62;
+    }
+
+    .modal-header {
+        text-align: center;
+        background-color: rgb(15, 110, 102);
+        /* Centra el contenido del encabezado */
+    }
+
+    .modal-header .modal-title {
+        color: black;
+        /* Cambia el color del texto a rojo */
+        font-weight: bold;
+        /* Opcional: negrita para el texto */
+        margin: 0 auto;
+        /* Centra el título horizontalmente */
+    }
+
+    #exampleModal .modal-body {
+        background-color: #082E33;
+        color: rgb(241, 237, 237);
+        font-weight: bold;
+        text-align: center;
+
+    }
+
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+
+
+        font-weight: bold;
+    }
+</style>
+<div class="container">
+    <h2 class="text-center my-4">Lista de Categorias</h2>
+    <!-- Button trigger modal -->
+
+    <div>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
+            Nueva categoría
+        </button>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Añadir categoría</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="categoriaForm" action="{% url 'crear_categoria' %}" method="POST" class="needs-validation"
+                        novalidate>
+                        {% csrf_token %}
+                        <label for="{{ form.nombre.id_for_label }}"> {{ form.nombre.label}}: </label>
+                        {{form.nombre}}
+                        <span id="nombre"></span>
+                        <br>
+                        <label for="{{ form.codigo_clasificacion.id_for_label }}"> {{form.codigo_clasificacion.label}}:
+                        </label>
+                        {{form.codigo_clasificacion}}
+                        <span id="codigo"></span>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-success" id="submitBtn" type="submit">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="Editar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar categoría</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="categoria_actualizar" action="{ url 'actualizar_categoria' }" method="POST"
+                        class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" id="form-id" name="id">
+                        <input type="text" id="form-nombre" name="nombre">
+                        <input type="text" id="form-codigo" name="codigo">
+                        <span id="nombre_error"></span>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-success" id="btn_categoria" type="submit">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Nombre categoria</th>
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Fecha</th>
+
+                    <th scope="col">Acciones</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {%for categoria in categorias %}
+                <tr>
+                    <td>{{categoria.nombre}}</td>
+                    <td>{{categoria.codigo_clasificacion}}</td>
+                    <td>{{categoria.fecha_creacion}}</td>
+                    <td>
+                        <button onclick="listar_categoria_id('{{ categoria.id }}')" class="btn btn-secondary btn-sm"
+                            data-toggle="modal" data-target="#Editar">Editar</button>
+
+
+
+                        <a href="{% url 'eliminar_categoria' categoria.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<script>
+
+    function listar_categoria_id(id) {
+
+        var baseUrl = "{% url 'listar_categoria_id' 0 %}";
+        var url = baseUrl.replace('0', id);
+        axios.get(url)
+            .then((result) => {
+                if (result.data) {
+                    document.getElementById('form-id').value = result.data.id;
+                    document.getElementById('form-nombre').value = result.data.nombre;
+                    document.getElementById('form-codigo').value = result.data.codigo;
+
+                }
+            }
+
+            )
+            .catch((e) => {
+                alert(e)
+            })
+
+
+    }
+
+    document.getElementById('btn_categoria').addEventListener('click', (e) => {
+        e.preventDefault()
+        const form = document.getElementById('categoria_actualizar')
+        console.log(form);
+
+        axios.post("{% url 'actualizar_categoria' %}", form)
+            .then((result) => {
+                if (result.data.data) {
+                    window.location.reload()
+                }
+                if (result.data.error) {
+                    document.getElementById('nombre_error').innerHTML = result.data.error
+                }
+            }).catch((err) => {
+                alert(err)
+            });
+    })
+
+    document.getElementById("submitBtn").addEventListener("click", (e) => {
+        e.preventDefault()
+        var formData = new FormData(document.getElementById("categoriaForm"));
+        axios.post('crear_categoria', formData)
+            .then((resultado) => {
+                if (resultado.data.errores) {
+                    console.log(resultado.data.errores.nombre);
+                    if (resultado.data.errores.nombre) {
+                        document.getElementById('nombre').innerHTML = resultado.data.errores.nombre
+                    }
+                    if (resultado.data.errores.codigo_clasificacion) {
+                        document.getElementById('codigo').innerHTML = resultado.data.errores.codigo_clasificacion
+                    }
+                } else if (resultado.data) {
+                    window.location.reload()
+                }
+            }).catch((e) => {
+                alert('Error de servidor')
+            })
+    })
+</script>
+
+
+{% endblock index %}

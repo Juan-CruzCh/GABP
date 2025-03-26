@@ -1,0 +1,114 @@
+{% extends '../base.html' %}
+
+{% block index %}
+
+<style>
+    .container {
+        background-color: #0E9097 !important;
+        color: rgb(240, 232, 232) !important;
+        font-weight: Helvetica Bold;
+    }
+
+    .text-center {
+
+        color: #0c0b0b !important;
+    }
+
+    .form-group {
+        background-color: #0E9097
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        background-color: #6DA5C0;
+        /* Fondo rojo claro */
+        color: #020405;
+        /* Texto rojo oscuro */
+
+    }
+
+    .form-control:focus,
+    .form-select:focus,
+    textarea:focus {
+        background-color: #0C6D73;
+        /* Fondo rojo más claro al enfocar */
+        border-color: rgb(3, 30, 41);
+        /* Borde rojo oscuro al enfocar */
+        box-shadow: 0 0 5px rgba(1, 49, 77, 0.5);
+        /* Sombra roja */
+    }
+</style>
+<div class="container">
+    <div class="text-center">AGREGAR PROVEEDORES</div>
+
+    <form method="POST" action="{% url 'actualizar_proveedor' data.id %}">
+        {% csrf_token %}
+        {% if mensaje %}
+        <div class="alert alert-warning" role="alert">
+            {{ mensaje}}
+        </div>
+
+        {% endif %}
+        <div class="row">
+            <div class="form-group col-6">
+                <label for="empresa">Empresa:</label>
+                <input required type="text" value="{{data.empresa}}" class="form-control   form-control-sm" id="empresa"
+                    name="empresa">
+            </div>
+            <div class="form-group col-6">
+                <label for="nit">Nit:</label>
+                <input required type="number" value="{{data.nit}}" class="form-control" id="nit" name="nit">
+            </div>
+            <div class="form-group col-6">
+                <label for="nombre">Nombre:</label>
+                <input required type="text" value="{{data.persona.nombre}}" class="form-control" id="nombre"
+                    name="nombre">
+            </div>
+            <div class="form-group col-6">
+                <label for="apellidos">Apellidos:</label>
+                <input required type="text" value="{{data.persona.apellidos}}" class="form-control" id="apellidos"
+                    name="apellidos">
+            </div>
+            <div class="form-group col-6">
+                <label for="cedula_identidad">Cedula de identidad :</label>
+                <input required type="text" value="{{data.persona.cedula_identidad}}" class="form-control"
+                    id="cedula_identidad" name="cedula_identidad">
+            </div>
+            <div class="form-group col-6">
+                <label for="correo">Correo electrónico:</label>
+                <input required type="email" value="{{data.correo}}" class="form-control" id="correo" name="correo">
+            </div>
+            <div class="form-group col-6">
+                <label for="telefono">Teléfono:</label>
+                <input required type="tel" value="{{data.telefono}}" class="form-control" id="telefono" name="telefono">
+            </div>
+            <div class="form-group col-6">
+                <label for="direccion">Direccion:</label>
+                <input required type="text" value="{{data.direccion}}" class="form-control" id="direccion"
+                    name="direccion">
+            </div>
+            <div class="form-group mt-3">
+                <textarea class="form-control" name="descripcion" cols="3">{{ data.descripcion }}</textarea>
+            </div>
+            <div class="form-group mt-3">
+                <select required class="form-select" aria-label="Default select example" name="pais">
+                    {% for codigo, nombre in paises %}
+                    <option value="{{ nombre }}">{{ nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-6">
+                <label for="direccion">Ciudad:</label>
+                <input required type="text" class="form-control" value="{{data.ciudad}}" id="direccion" name="ciudad">
+            </div>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a type="submit" href="{% url 'listar_proveedor'%}" class="btn btn-secondary">Salir</a>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock index %}

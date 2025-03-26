@@ -1,0 +1,316 @@
+{% extends '../base.usuarios.html' %}
+{% load static %}
+{% block usuario %}
+<style>
+    th{
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+    .texto-blanco {
+    color: white;
+    font-weight: bold;
+}
+
+
+</style>
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-sm-12 col-md-4">
+            <form action="{% url 'index' %}" method="POST">
+                {% csrf_token %}
+                <h4 class="texto-blanco">Buscar por categoria</h4>
+                <select class="form-select" name="categoria_id">
+                    {% for categoria in listado_categoria %}
+                    <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success">Buscar</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 col-md-8">
+            <div class="text-center">
+                <h3 class="texto-blanco">Lista de {{ categoria }}</h3>
+            </div>
+            <div class="mb-lg-4 text-end">
+                <form class="d-flex justify-content-end" role="search" action="{% url 'buscar' %}" method="GET">
+                    <input class="form-control me-2" type="search" name="buscador" value="{{ request.GET.buscador }}"
+                        placeholder="Buscar materiales" aria-label="Buscar">
+                    <button class="btn btn-outline-primary btn-sm" type="submit">Buscar</button>
+                </form>
+            </div>
+
+            <form action="{% url 'index' %}" method="GET">
+                <select id="num" name="limit">
+                    <option name="page" value="10">10</option>
+                    <option name="page" value="20">20</option>
+                    <option name="page" value="50">50</option>
+                    <option name="page" value="100">100</option>
+                    <option name="page" value="200">200</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+            </form>
+            <div class="table-responsive mt-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Gestion</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for material in data %}
+                        <tr>
+                            <td>{{ material.gestion }}</td>
+                            <td>{{ material.codigo }}</td>
+                            <td>{{ material.nombre }}</td>
+                            <td>{{ material.marca }}</td>
+                            <td>{% if material.stock > 0 %}
+                                Disponible
+                                {% else %}
+                                No disponible
+                                {% endif%}
+                            </td>
+                            <td>
+                                <button onclick="listar_informacion_material('{{ material.id }}')" type="button"
+                                    class="btn btn-primary" data-toggle="modal" data-target="#pedidoModal">
+                                    Añadir
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Lista de materiales vacía</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include 'paginador/paginador.html' %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="pedidoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalLabel">Detalles del Pedido y Aprobación</h5>
+            </div>
+            <div class="modal-body">
+                <form id="pedido_formulario">
+                    {% csrf_token %}
+                    <!-- Detalles del Pedido -->
+                    <legend class="text-muted" >Informacion del material</legend>
+                    <div class="form-group">
+                        <label for="productos" class="font-weight-bold">Material</label>
+                        <ul id="productos" class="list-group">
+                            <li class="list-group-item">
+                                <input type="text" id="codigo" class="form-control mb-2" disabled>
+                                <input type="text" id="material" class="form-control" disabled>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Campos de Aprobación -->
+                    <fieldset>
+                        <legend class="text-muted">Formulario de pedido</legend>
+                        <input type="text" id="id" name="id_material" class="form-control mb-2" hidden>
+                        <div class="form-group">
+                            <label for="campoNumero" class="font-weight-bold">Cantidad</label>
+                            <input type="number" class="form-control" id="campoNumero" name="cantidad_pedido" value="1"
+                                required>
+                        </div>
+                    </fieldset>
+                    <div class="text-center mt-4">
+                        <button id="enviar" type="button" class="btn btn-success">Enviar</button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <span id="mensaje"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!--------------------------------------------MIS PEDIDOS-------------------------------------------------------->
+
+
+
+{% if data1|length > 0 %}
+<div class="container mt-2">
+    <div class="text-center">
+        <h2>{{ title }}</h2>
+    </div>
+    <div>
+        {{ error }}
+    </div>
+    <form id="pedidoForm">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Material</th>
+                    <th>descripcion</th>
+                    <th>Cantidad de pedido</th>
+                    <th>Cantidad de entrega</th>
+                    <th>Fecha</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in data1 %}
+                <tr>
+                    <td hidden> <input type="text" class="id_pedido" value="{{ pedido.id }}"></td>
+
+                    <td>{{ pedido.material.codigo }}</td>
+                    <td>{{ pedido.material.nombre }}</td>
+                    <td>{{ pedido.descripcion }}</td>
+                    <td>{{ pedido.cantidad_pedida }}</td>
+                    <td>{{ pedido.cantidad_entrega }}</td>
+                    <td>{{ pedido.fecha_pedido|date:"m/d/y" }}</td>
+                    <td>
+                        <a href="{% url 'eliminar_mi_pedido_carrito' pedido.id %}"
+                            class='btn btn-danger btn-sm'>Cancelar
+                            pedido</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include 'paginador/paginador.html' %}
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-sm" id="realizarPedidoBtn">Realizar pedido</button>
+            <button type="submit" class="btn btn-danger btn-sm" id="cancelarPedido">Cancelar</button>
+        </div>
+    </form>
+</div>
+
+{% endif %}
+
+
+{% endblock usuario %}
+
+{% block js %}
+<script src="{% static 'js/alertas.js' %}"></script>
+
+<script>
+    $('#pedidoModal').on('shown.bs.modal', function () {
+        document.getElementById("mensaje").innerHTML = '';
+        document.getElementById("campoNumero").value = 1; // Limpia el mensaje
+    });
+
+    const realizarPedidoBtn = document.getElementById('realizarPedidoBtn')
+    if (realizarPedidoBtn) {
+        document.getElementById('realizarPedidoBtn').addEventListener('click', function (e) {
+            e.preventDefault()
+            var ids = [];
+            var idElements = document.querySelectorAll('.id_pedido');
+            idElements.forEach(function (element) {
+                ids.push(element.value);
+            });
+
+            var queryString = ids.map(id => `id=${encodeURIComponent(id)}`).join('&');
+
+
+            axios.get(`/cambiar_estado_pedido?${queryString}`)
+                .then((result) => {
+                    window.location.reload()
+                })
+                .catch((err) => {
+                    console.error(err); // Muestra el error en la consola
+                });
+
+            console.log(ids); // Muestra todos los IDs en la consola
+        });
+    }
+
+    const cancelarPedido = document.getElementById('cancelarPedido')
+    if (cancelarPedido) {
+        document.getElementById('cancelarPedido').addEventListener('click', function (e) {
+            e.preventDefault()
+            var ids = [];
+            var idElements = document.querySelectorAll('.id_pedido');
+            idElements.forEach(function (element) {
+                ids.push(element.value);
+            });
+
+            var queryString = ids.map(id => `id=${encodeURIComponent(id)}`).join('&');
+            axios.get(`/cancelar_todos_los_pedidos?${queryString}`)
+                .then((result) => {
+                    window.location.reload()
+                })
+                .catch((err) => {
+
+                });
+
+
+        });
+    }
+    function listar_informacion_material(id_material) {
+        axios.get(`listar_info_material/${id_material}`)
+            .then((result) => {
+                if (result.data.data) {
+                    document.getElementById('id').value = result.data.data.id;
+                    document.getElementById('codigo').value = result.data.data.codigo;
+                    document.getElementById('material').value = result.data.data.nombre;
+                }
+            })
+            .catch((err) => {
+                alert('Error al obtener los detalles del material');
+                console.error(err);
+            });
+    }
+
+
+    document.getElementById('enviar').addEventListener("click", (e) => {
+
+        e.preventDefault()
+        const formulario = document.getElementById('pedido_formulario')
+        document.getElementById("mensaje").innerHTML = ''
+        axios.post("realizar_pedido", formulario)
+            .then((result) => {
+                if (result.data.data) {
+                    document.getElementById("mensaje").innerHTML = result.data.data
+                    window.location.reload()
+
+                } else if (result.data.error) {
+                    document.getElementById("mensaje").innerHTML = result.data.error
+                }
+            })
+            .catch((err) => {
+                alert('Error al obtener los detalles del material');
+                console.error(err);
+            });
+    })
+</script>
+{% endblock js %}
+
+

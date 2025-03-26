@@ -1,0 +1,123 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+    /* Alinear los botones de paginación a la derecha */
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+    }
+
+    /* Alinear los botones de exportación a la derecha */
+    .dt-buttons {
+        float: right;
+        margin-bottom: 10px;
+    }
+
+    /* Alinear el buscador a la derecha */
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+        margin-bottom: 10px;
+        /* Espacio inferior */
+    }
+    th{
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+        font-weight: bold;
+    }
+    h2{
+        color: white;
+        
+       
+        font-weight: bold;
+    }
+    .row{
+        color: white;
+        
+       
+        font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <h2>Reporte de Pedidos</h2>
+
+    <form action="{% url 'reporte_pedidos' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-2">
+                <label for="fecha_inicio">Fecha Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control"
+                    value="{{ fecha_inicio }}">
+            </div>
+            <div class="form-group col-2">
+                <label for="fecha_fin">Fecha Fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-2 mt-5">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    <table id="reporteTable" class="table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">Nombre</th>
+                <th style="width: 10%;">Apellidos</th>
+                <th style="width: 10%;">Usuario</th>
+                <th style="width: 10%;">Cantidad Pedida</th>
+                <th style="width: 10%;">Sub Pedida</th>
+                <th style="width: 10%;">Cantidad Entregada</th>
+                <th style="width: 10%;">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reporte in data %}
+            <tr>
+                <td>{{ reporte.usuario.persona.nombre }}</td>
+                <td>{{ reporte.usuario.persona.apellidos }}</td>
+                <td>{{ reporte.usuario.username }}</td>
+                <td>{{ reporte.cantidad_pedida }}</td>
+                <td>{{ reporte.sub_cantidad_pedida }}</td>
+                <td>{{ reporte.cantidad_entrega }}</td>
+                <td>{{ reporte.fecha_entrega_salida|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setDate(today.getDate() - 1); // Resta un día
+        const formattedDate = today.toISOString().split('T')[0];
+
+
+        if (!document.getElementById('fecha_inicio').value) {
+            document.getElementById('fecha_inicio').value = formattedDate;
+        }
+        if (!document.getElementById('fecha_fin').value) {
+            document.getElementById('fecha_fin').value = formattedDate;
+        }
+
+    });
+    $('#reporteTable').DataTable({
+        dom: 'Bfrtip', // Asegúrate de incluir 'p' para la paginación
+        buttons: [
+            'excel', 'pdf', 'print' // Botones de exportación
+        ],
+        language: {
+            paginate: {
+                next: 'Siguiente',
+                previous: 'Anterior',
+            }
+        }
+    });
+
+</script>
+{% endblock js %}

@@ -1,0 +1,22 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block index %}
+<div class="container mt-5">
+    <h2>Editar Oficina</h2>
+    <form method="POST" action="{% url 'editar_oficina' oficina.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre_oficina" class="form-label">Nombre de la Oficina</label>
+            <input type="text" class="form-control" id="nombre_oficina" name="oficina" value="{{oficina.nombre}}"
+                required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+</div>
+{% endblock index %}
+
+{% block js %}
+<!-- Include necessary JS files here, if any -->
+{% endblock js %}

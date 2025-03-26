@@ -1,0 +1,182 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+    /* Alinear los botones de paginación a la derecha */
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+    }
+
+    /* Alinear los botones de exportación a la derecha */
+    .dt-buttons {
+        float: right;
+        margin-bottom: 10px;
+    }
+
+    /* Alinear el buscador a la derecha */
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+        margin-bottom: 10px;
+    }
+
+    /* Hacer que la tabla sea responsiva */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table th,
+        .table td {
+            white-space: nowrap;
+        }
+    }
+    th{
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+        font-weight: bold;
+    }
+    .row{
+        color: white;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <h2>Reporte de salida de Material</h2>
+
+    <form action="{% url 'reporte_pedido_salida' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group col-2">
+                <label for="fecha_inicio">Fecha Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control"
+                    value="{{ fecha_inicio }}">
+            </div>
+            <div class="form-group col-2">
+                <label for="fecha_fin">Fecha Fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-2 mt-5">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table id="reporteTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 10%;  font-size: 0.8em;">Código</th>
+                    <th style="width: 10%; font-size: 0.8em;">Material</th>
+                    <th style="width: 10%; font-size: 0.8em;">Marca</th>
+                    <th style="width: 10%; font-size: 0.8em;">Stock</th>
+                    <th style="width: 10%; font-size: 0.8em;">Tamaño</th>
+                    <th style="width: 10%;font-size: 0.8em;">Color</th>
+                    <th style="width: 10%; font-size: 0.8em ">Unidad de Medida</th>
+                    <th style="width: 10%; font-size: 0.8em">Factura</th>
+                    <th style="width: 10%; font-size: 0.8em">Código de Paquete</th>
+                    <th style="width: 10%; font-size: 0.8em">Categoría</th>
+                    <th style="width: 10%; font-size: 0.8em">Salida</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedi in data %}
+                <tr>
+                    <td style="font-size: 0.8em">{{ pedi.material.codigo }}</td>
+                    <td style="font-size: 0.8em">{{ pedi.material.nombre }}</td>
+                    <td style="font-size: 0.8em">{{ pedi.material.marca }}</td>
+                    <td style="font-size: 0.8em">{{ pedi.material.stock }}</td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.tamaño %}
+                        {{ pedi.material.tamaño }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.color %}
+                        {{ pedi.material.color }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.unidad_medida %}
+                        {{ pedi.material.unidad_medida }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.factura %}
+                        {{pedi.material.factura }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.codigo_paquete %}
+                        {{ pedi.material.codigo_paquete }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+
+                    <td style="font-size: 0.8em">
+                        {% if pedi.material.categoria.nombre %}
+                        {{ pedi.material.categoria.nombre }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.8em">
+                        {% if pedi.cantidad_entrega %}
+                        {{ pedi.cantidad_entrega }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+
+
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setDate(today.getDate() - 1); // Resta un día
+        const formattedDate = today.toISOString().split('T')[0];
+
+        if (!document.getElementById('fecha_inicio').value) {
+            document.getElementById('fecha_inicio').value = formattedDate;
+        }
+        if (!document.getElementById('fecha_fin').value) {
+            document.getElementById('fecha_fin').value = formattedDate;
+        }
+    });
+
+    $('#reporteTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'excel', 'pdf', 'print'
+        ],
+        language: {
+            paginate: {
+                next: 'Siguiente',
+                previous: 'Anterior',
+            }
+        }
+    });
+</script>
+{% endblock js %}

@@ -1,0 +1,137 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Manual de Usuario del Sistema de Inventario</h1>
+
+    <div class="accordion" id="manualAccordion">
+        <!-- Introducción -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne">
+                    1. Introducción
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show " aria-labelledby="headingOne"
+                data-bs-parent="#manualAccordion">
+                <div style="color: white;" class="accordion-body ">
+                    El Sistema de Inventario es una herramienta desarrollada en Python 3.12 y Django 5.0.3 que
+                    permite gestionar productos, categorías y existencias. Este manual proporciona instrucciones
+                    sobre la instalación, configuración y uso básico del sistema.
+                </div>
+            </div>
+        </div>
+
+        <!-- Requisitos Previos -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    2. Requisitos Previos
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                data-bs-parent="#manualAccordion">
+                <div style="color: white;" class="accordion-body">
+                    <h5>2.1. Hardware</h5>
+                    <ul>
+                        <li>Procesador: Intel Core i3 o superior</li>
+                        <li>Memoria RAM: 4 GB o superior</li>
+                        <li>Espacio en Disco: 500 MB disponible</li>
+                    </ul>
+                    <h5>2.2. Software</h5>
+                    <ul>
+                        <li>Python 3.12 instalado</li>
+                        <li>Administrador de paquetes pip</li>
+                        <li>Sistema operativo: Windows, macOS o Linux</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instalación del Sistema -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    3. Instalación del Sistema
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                data-bs-parent="#manualAccordion">
+                <div style="color: white;" class="accordion-body">
+                    <h5>3.1. Clonar el Repositorio</h5>
+                    <ol>
+                        <li>Abra la terminal o línea de comandos.</li>
+                        <li>Ejecute el siguiente comando:</li>
+                        <pre
+                            class=" p-3 border rounded">git clone https://github.com/usuario/sistema-inventario.git<br>cd sistema-inventario</pre>
+                    </ol>
+
+                    <h5>3.2. Crear un Entorno Virtual</h5>
+                    <pre class=" p-3 border rounded">python -m venv env</pre>
+                    <p>Active el entorno virtual:</p>
+                    <ul>
+                        <li><strong>Windows:</strong> <code>.\env\Scripts\activate</code></li>
+                        <li><strong>Linux/Mac:</strong> <code>source env/bin/activate</code></li>
+                    </ul>
+
+                    <h5>3.3. Instalar Dependencias</h5>
+                    <p>Ejecute el comando:</p>
+                    <pre class="p-3 border rounded">pip install -r requirements.txt</pre>
+
+                    <h5>3.4. Configurar la Base de Datos</h5>
+                    <ol>
+                        <li>Realice las migraciones:</li>
+                        <pre
+                            class=" p-3 border rounded">python manage.py makemigrations<br>python manage.py migrate</pre>
+                    </ol>
+
+                    <h5>3.5. Iniciar el Servidor</h5>
+                    <p>Ejecute el comando:</p>
+                    <pre class=" p-3 border rounded">python manage.py runserver</pre>
+                    <p>Acceda al sistema en <a href="http://127.0.0.1:8000" target="_blank">http://127.0.0.1:8000</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mantenimiento -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    4. Mantenimiento
+                </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                data-bs-parent="#manualAccordion">
+                <div style="color: white;" class="accordion-body">
+                    <h5>Actualización de Dependencias</h5>
+                    <pre class=" p-3 border rounded">pip install --upgrade -r requirements.txt</pre>
+
+                    <h5>Verificar Errores en Modelos</h5>
+                    <pre class=" p-3 border rounded">python manage.py check</pre>
+
+                    <h5>Generar Migraciones por Aplicación</h5>
+                    <pre class=" p-3 border rounded">python manage.py makemigrations &lt;nombre_app&gt;</pre>
+
+                    <h5>Aplicar Migraciones</h5>
+                    <pre class=" p-3 border rounded">python manage.py migrate</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock index %}
+
+{% block js %}
+<!-- Include necessary JS files here, if any -->
+{% endblock js %}

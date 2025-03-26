@@ -1,0 +1,64 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+
+
+<style>
+    .card {
+        border: 1px solid #007bff;
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-header {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+    }
+
+    .unit {
+        border: 1px dashed #007bff;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        background-color: #f8f9fa;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Organigrama</h1>
+    <div class="row">
+        {% for secretaria in data %}
+        <div class="col-md-4">
+            <div class="card my-3">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ secretaria.secretaria }}</h5>
+                </div>
+                <div class="card-body">
+                    {% for unidad in secretaria.unidades %}
+                    <div class="unit">
+                        <h6 class="text-info">Unidad: {{ unidad.unidad }}</h6>
+                        <ul class="list-group">
+                            {% for oficina in unidad.oficinas %}
+                            <li class="list-group-item">
+                                <i class="fas fa-building"></i> Oficina: {{ oficina }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<!-- Include necessary JS files here, if any -->
+{% endblock js %}

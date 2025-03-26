@@ -1,0 +1,84 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+<style>
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+</style>
+<div class="container table-responsive">
+    <h2 class="text-center">Cuentas de Usuario</h2>
+    <div class="row justify-content-start mb-3">
+        <div class="col-auto">
+            <a class="btn btn-success btn-sm" href="{% url 'creando_usuarios' %}">Añadir Usuario</a>
+        </div>
+    </div>
+
+    <form action="{% url 'listando_usuarios' %}" method="GET">
+        <select id="num" name="page">
+            <option name="page" value="10">10</option>
+            <option name="page" value="20">20</option>
+            <option name="page" value="50">50</option>
+            <option name="page" value="100">100</option>
+            <option name="page" value="200">200</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+    </form>
+    <table class="table table-striped mt-4 small"> <!-- Añadido class="small" -->
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">C.I</th>
+                <th scope="col">Nombre Completo</th>
+                <th scope="col">Unidad</th>
+                <th scope="col">Oficina</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in data %}
+            <tr>
+                <td>{{ cuenta.persona.cedula_identidad }}</td>
+                <td>{{ cuenta.persona.nombre }} {{ cuenta.persona.apellidos }}</td>
+                <td>{{ cuenta.unidad.nombre }}</td>
+                <td>{{ cuenta.oficina.nombre }}</td>
+                <td>{{ cuenta.username }}</td>
+                <td>
+                    {{cuenta.cargo}}
+                </td>
+                <td>{{ cuenta.rol }}</td>
+                <td>
+                    <a class="btn btn-secondary btn-sm"
+                        href="{% url 'actulizar_cuenta_usuario' cuenta.id cuenta.persona.id %}" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a class="btn btn-danger btn-sm" href="{% url 'eliminar_cuenta' cuenta.id %}" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                    {% if cuenta.es_activo %}
+                    <a class="btn btn-warning btn-sm" href="{% url 'desactivar_cuenta' cuenta.id %}" title="Desactivar">
+                        <i class="bi bi-person-dash"></i>
+                    </a>
+                    {% else %}
+                    <a class="btn btn-success btn-sm" href="{% url 'activar_cuenta' cuenta.id %}" title="Activar">
+                        <i class="bi bi-person-check"></i>
+                    </a>
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'paginador/paginador.html' %}
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<!-- Include necessary JS files here, if any -->
+{% endblock js %}

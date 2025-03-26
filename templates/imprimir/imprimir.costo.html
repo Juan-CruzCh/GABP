@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido de Materiales</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Estilos básicos para el cuerpo */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table,
+        .table th,
+        .table td {
+            border: 1px solid #ddd;
+        }
+
+        .signature-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .signature-table td {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .signature-label {
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .no-bullets {
+            list-style-type: none;
+
+            padding: 0;
+
+            margin: 0;
+
+        }
+
+        .no-bullets li {
+            padding-left: 0;
+
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            .table,
+            .table th,
+            .table td {
+                border: 1px solid #000 !important;
+
+                border-collapse: collapse;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="text-center mb-4">
+            <h4>PEDIDO DE MATERIALES y/o BIENES</h4>
+            <p>Almacén Central del Gobierno Autónomo Departamental de Potosí</p>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Cod. pedido</th>
+                    <th>Cod. material</th>
+                    <th>Cant. Pedida</th>
+                    <th>Cant. entrega.</th>
+                    <th>Partida presupuestada</th>
+                    <th>Unidad</th>
+                    <th>total</th>
+                    <th>fecha</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in data %}
+                <tr>
+                    <td>{{ pedido.numero_pedido }}</td>
+                    <td>{{ pedido.material.nombre }}</td>
+                    <td>{{ pedido.cantidad_pedida }}</td>
+                    <td>{{ pedido.cantidad_entrega }}</td>
+                    <td>{{ pedido.partida_presupuestada }}</td>
+                    <td>{{ pedido.costo_unidad }}</td>
+                    <td>{{ pedido.costo_total }}</td>
+                    <td>{{ pedido.fecha_pedido|date:"m/d/y" }}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="signature-table">
+            <tr>
+                <td>
+                    <p class="signature-label">Pedido por</p>
+                    <p>...{{ usuario_pedido }}..</p>
+                </td>
+                <td>
+                    <p class="signature-label">Autorizado por</p>
+                    <ul class="no-bullets">
+                        {% if user_oficina.usuario %}
+                        <li>{{ user_oficina.usuario }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+
+                        {% if user_oficina.cargo %}
+                        <li>{{ user_oficina.cargo }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+                    <p class="signature-label">Autorizado por</p>
+                    <ul class="no-bullets">
+                        {% if user_unidad.usuario %}
+                        <li>{{ user_unidad.usuario }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+
+                        {% if user_unidad.cargo %}
+                        <li>{{ user_unidad.cargo }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="signature-label">Autorizado por</p>
+                    <ul class="no-bullets">
+                        {% if user_cardista.usuario %}
+                        <li>{{ user_cardista.usuario }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+
+                        {% if user_cardista.cargo %}
+                        <li>{{ user_cardista.cargo }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+
+                    <p class="signature-label">Autorizado por</p>
+                    <ul class="no-bullets">
+                        {% if user_presupuesto.usuario %}
+                        <li>{{ user_presupuesto.usuario }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+
+                        {% if user_presupuesto.cargo %}
+                        <li>{{ user_presupuesto.cargo }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td>
+                    <p class="signature-label">Autorizado por</p>
+                    <ul class="no-bullets">
+                        {% if user_almacen.usuario %}
+                        <li>{{ user_almacen.usuario }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+
+                        {% if user_almacen.cargo %}
+                        <li>{{ user_almacen.cargo }}</li>
+                        {% else %}
+                        <li>.......................</li>
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <p>..........................................</p>
+                    <p class="signature-label">Recibido por</p>
+                    <p>Nombre, cargo y firma</p>
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="text-center mt-4">
+
+            <button onclick="window.print()" class="btn btn-primary no-print">Imprimir</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

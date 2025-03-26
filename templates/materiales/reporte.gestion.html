@@ -1,0 +1,251 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<style>
+    /* Alinear los botones de paginación a la derecha */
+    .dataTables_wrapper .dataTables_paginate {
+        float: right;
+    }
+
+    /* Alinear los botones de exportación a la derecha */
+    .dt-buttons {
+        float: right;
+        margin-bottom: 10px;
+    }
+
+    /* Alinear el buscador a la derecha */
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+        margin-bottom: 10px;
+    }
+
+    /* Hacer que la tabla sea responsiva */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table th,
+        .table td {
+            white-space: nowrap;
+        }
+    }
+
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+        font-weight: bold;
+    }
+
+    h2 {
+        color: white;
+
+
+        font-weight: bold;
+    }
+
+    .row {
+        color: white;
+
+
+        font-weight: bold;
+    }
+</style>
+<div class="container">
+    <form method="POST" action="{% url 'reporte_gestion' %}">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-6">
+                <div class="mt-3">
+                    <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control form-control-sm"
+                        value="{{ request.POST.fecha_inicio }}">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="mt-3">
+                    <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="form-control form-control-sm"
+                        value="{{ request.POST.fecha_fin }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de búsqueda -->
+        <button type="submit" class="btn btn-primary mt-3">Buscar</button>
+    </form>
+</div>
+
+<h2>Lista de Materiales</h2>
+<div class="table-responsive">
+    <table id="table_gestion" class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width: 10%; font-size: 0.8em; text-align: center;">Gestión</th>
+                <th style="font-size: 0.8em; text-align: center;">Nombre</th>
+                <th style="font-size: 0.8em; text-align: center;">Código</th>
+                <th style="font-size: 0.8em; text-align: center;">Marca</th>
+                <th style="font-size: 0.8em; text-align: center;">Stock</th>
+                <th style="font-size: 0.8em; text-align: center;">Creación</th>
+                <th style="font-size: 0.8em; text-align: center;">Tamaño</th>
+                <th style="font-size: 0.8em; text-align: center;">Color</th>
+                <th style="font-size: 0.8em; text-align: center;">U. Medida</th>
+                <th style="font-size: 0.8em; text-align: center;">U. Manejo</th>
+                <th style="font-size: 0.8em; text-align: center;">Material</th>
+                <th style="font-size: 0.8em; text-align: center;">Factura</th>
+                <th style="font-size: 0.8em; text-align: center;">Cód. Paq.</th>
+                <th style="font-size: 0.8em; text-align: center;">Categoría</th>
+                <th style="font-size: 0.8em; text-align: center;">Proveedor</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in data %}
+            <tr>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.gestion }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.nombre }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.codigo }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.marca }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.stock }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.fecha_creacion|date:"d-m-Y" }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.tamaño }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.color }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.unidad_medida }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.unidad_manejo }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.material }}</td>
+
+                <td style="font-size: 0.8em; text-align: center;">{{ material.factura}}</td>
+
+                <td style="font-size: 0.8em; text-align: center;">{{ material.codigo_paquete }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.categoria.nombre }}</td>
+                <td style="font-size: 0.8em; text-align: center;">{{ material.proveedor.persona.nombre }}
+                    {{material.proveedor.persona.apellidos }}</td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'paginador/paginador.html' %}
+</div>
+
+{% endblock index %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#table_gestion').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'excel',
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    text: 'PDF',
+                    title: 'Lista de Materiales',
+                    exportOptions: {
+                        columns: ':visible'
+                    },
+                    customize: function (doc) {
+
+                        doc.styles.tableHeader = {
+                            fillColor: '#082E33',
+                            color: '#FFFFFF',
+                            alignment: 'center',
+                            fontSize: 8,
+                            bold: true
+                        };
+                        doc.styles.tableBodyOdd = {
+                            fillColor: '#F2F2F2'
+                        };
+                        doc.styles.tableBodyEven = {
+                            fillColor: '#FFFFFF'
+                        };
+                        doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
+
+
+                        doc.content.push({
+                            text: '\n\n\n',
+                        });
+
+
+                        doc.content.push({
+                            alignment: 'center',
+                            columns: [
+                                {
+                                    text: '_______________________________\nAdministrador de Almacen',
+                                    margin: [0, 20, 0, 0],
+                                    style: 'signatureStyle'
+                                },
+                                {
+                                    text: '_______________________________\nProfesional II Encargada de Almacenes',
+                                    margin: [0, 20, 0, 0],
+                                    style: 'signatureStyle'
+                                }
+                            ]
+                        });
+
+                        // Estilo de las firmas
+                        doc.styles.signatureStyle = {
+                            fontSize: 10,
+                            bold: true,
+                            alignment: 'center'
+                        };
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    title: 'Lista de Materiales',
+                    customize: function (win) {
+
+                        $(win.document.body).append(`
+                        <div style="margin-top: 50px; text-align: center;">
+                            <div style="display: inline-block; margin-right: 50px;">
+                                <p>_______________________________</p>
+                                <p>Administrador de Almacen</p>
+                            </div>
+                            <div style="display: inline-block;">
+                                <p>_______________________________</p>
+                                <p>Profesional II Encargada de Almacenes</p>
+                            </div>
+                        </div>
+                    `);
+
+
+                        $(win.document.body).find('table').css({
+                            'font-size': '12px',
+                            'border-collapse': 'collapse',
+                            'width': '100%'
+                        });
+                    }
+                }
+            ],
+            language: {
+                paginate: {
+                    next: 'Siguiente',
+                    previous: 'Anterior',
+                }
+            }
+        });
+    });
+
+    // Script para establecer las fechas predeterminadas
+    const fechaInicio = document.getElementById('fecha_inicio');
+    const fechaFin = document.getElementById('fecha_fin');
+
+    const today = new Date();
+    today.setDate(today.getDate() - 1);
+    const formattedDate = today.toISOString().split('T')[0];
+
+    if (fechaInicio && !fechaInicio.value) {
+        fechaInicio.value = formattedDate;
+    }
+    if (fechaFin && !fechaFin.value) {
+        fechaFin.value = formattedDate;
+    }
+</script>
+
+{% endblock js %}

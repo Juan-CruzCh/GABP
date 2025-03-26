@@ -1,0 +1,110 @@
+{% extends '../base.html' %}
+
+{% block index %}
+<div class="container">
+    <h2 class="text-center mb-3">Información del Material</h2>
+    <div class="row p-5 card">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Nombre</th>
+                        <td>{{ material.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Código</th>
+                        <td>{{ material.codigo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Marca</th>
+                        <td>{{ material.marca }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Stock</th>
+                        <td>{{ material.stock }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Creación</th>
+                        <td>{{ material.fecha_creacion }}</td>
+                    </tr>
+                    {% if material.tamaño %}
+                    <tr>
+                        <th>Tamaño</th>
+                        <td>{{ material.tamaño }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.color %}
+                    <tr>
+                        <th>Color</th>
+                        <td>{{ material.color }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.unidad_medida %}
+                    <tr>
+                        <th>Unidad de Medida</th>
+                        <td>{{ material.unidad_medida }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.precio_unidad %}
+                    <tr>
+                        <th>Precio Unidad</th>
+                        <td>{{ material.precio_unidad }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.precio_paquete %}
+                    <tr>
+                        <th>Precio Paquete</th>
+                        <td>{{ material.precio_paquete  }}</td>
+                    </tr>
+                    
+                    {% endif %}
+                    {% if material.material %}
+                    <tr>
+                        <th>Material</th>
+                        <td>{{ material.material }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.codigo_paquete %}
+                    <tr>
+                        <th>Código de Paquete</th>
+                        <td>{{ material.codigo_paquete }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.categoria.nombre %}
+                    <tr>
+                        <th>Categoría</th>
+                        <td>{{ material.categoria.nombre }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if material.categoria.nombre %}
+                    <tr>
+                        <th>Factura</th>
+                        <td>{{ material.factura }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Cantidad por Unidad</th>
+                    <th>Cantidad por Paquete</th>
+
+                    <th>Fecha</th>
+                </tr>
+                {% for data in data_info_material %}
+                <tr>
+                    <td>{{ data.cantidad_paquete_unidad }}</td>
+                    <td>{{ data.cantidad_paquete }}</td>
+                    <td>{{ data.fecha_creacion}}</td>
+
+
+                </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    </div>
+</div>
+{% endblock index %}

@@ -1,0 +1,47 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+<style>
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+</style>
+<div class="container">
+    <h1>Lista de Unidades</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Secretaria</th>
+                <th>Estado</th>
+                <th>Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unidad in data %}
+            <tr>
+                <td>{{ unidad.nombre }}</td>
+                <td>{{ unidad.secretaria.secretaria }}</td>
+                <td>{{ unidad.esHabilitado|yesno:"Habilitada,Deshabilitada" }}</td>
+
+                <td>
+                    <a href="{% url 'editar_unidad' unidad.id %}" class="btn btn-warning btn-sm"><i
+                            class="bi bi-pencil"></i></a>
+                    <a href="{% url 'delete_unidad' unidad.id %}" class="btn btn-danger btn-sm"><i
+                            class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No hay unidades disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock index %}
+
+{% block js %}
+<!-- Include necessary JS files here, if any -->
+{% endblock js %}

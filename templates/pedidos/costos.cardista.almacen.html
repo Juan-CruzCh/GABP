@@ -1,0 +1,104 @@
+{% extends '../base.html' %}
+{% load static %}
+{% block index %}
+<style>
+    th {
+        background-color: #082E33 !important;
+        color: rgb(241, 238, 238) !important;
+    }
+
+    .row {
+        color: white;
+
+
+        font-weight: bold;
+    }
+</style>
+<div class="container mt-2">
+    <form method="POST" class="mb-3" action="{% url 'listar_pedidos_cardista_costo_almacen' %}">
+
+        {% csrf_token %}
+        <div class="row">
+            <div class="col">
+                <label for="fecha_inicio">Fecha Inicio</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control"
+                    value="{{ fecha_inicio }}">
+            </div>
+            <div class="col">
+                <label for="fecha_fin">Fecha Fin</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary mt-4">Filtrar</button>
+            </div>
+        </div>
+        <select id="num" name="limit">
+            <option name="page" value="10">10</option>
+            <option name="page" value="20">20</option>
+            <option name="page" value="50">50</option>
+            <option name="page" value="100">100</option>
+            <option name="page" value="200">200</option>
+        </select>
+    </form>
+
+
+    <div class="text-center">
+        <h2>{{ title}}</h2>
+    </div>
+    <div>
+        {{ error }}
+    </div>
+
+</div>
+
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-light">
+        <tr>
+            <th>Código</th>
+            <th>Nombre Completo</th>
+            <th>fecha</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pedido in data %}
+        <tr>
+            <td>{{ pedido.numero_pedido }}</td>
+            <td>{{ pedido.usuario.persona.nombre }} {{ pedido.usuario.persona.apellidos }}</td>
+            <td>{{ pedido.aprobado_cardista_segunda_fecha|date:"m/d/y H:i" }}</td>
+            <td> <a href="{% url 'listar_pedido_codigo_cardita_almacen' pedido.numero_pedido %}"
+                    class="btn btn-success btn-sm">costo</a></td>
+        </tr>
+
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock index %}
+
+{% block js %}
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setDate(today.getDate()); // Resta un día
+        const formattedDate = today.toISOString().split('T')[0];
+
+        if (!document.getElementById('fecha_inicio').value) {
+            document.getElementById('fecha_inicio').value = formattedDate;
+        }
+        if (!document.getElementById('fecha_fin').value) {
+            document.getElementById('fecha_fin').value = formattedDate;
+        }
+    });
+
+
+</script>
+
+{% endblock js %}
