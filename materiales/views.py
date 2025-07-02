@@ -49,28 +49,33 @@ def crear_material(request):
         if(formulario.is_valid() and formulario_info_material.is_valid()):
            try:
                 codigo= formulario.cleaned_data['codigo']
-                codigo_paquete= formulario.cleaned_data['codigo_paquete']
+                cantidad_paquete_unidad= formulario_info_material.cleaned_data['cantidad_paquete_unidad']
+                precio_paquete= formulario_info_material.cleaned_data['precio_paquete']
+              
+                precio_unidad = precio_paquete / cantidad_paquete_unidad
+                #codigo_paquete= formulario.cleaned_data['codigo_paquete']
                 c = Materiales.objects.filter(codigo= codigo, es_habilitado=True).first()
-                p = Materiales.objects.filter(codigo_paquete= codigo_paquete,  es_habilitado=True).first()
+                #p = Materiales.objects.filter(codigo_paquete= codigo_paquete,  es_habilitado=True).first()
                 
                 if c:
                     messages.success(request, f'El codigo {c.codigo}  ya existe')
                     return render(request, 'materiales/formulario.material.html', {'form': formulario, 'form_info': formulario_info_material})
-                elif p  :
-                    messages.success(request, f'El codigo {p.codigo_paquete}  ya existe')
-                    return render(request, 'materiales/formulario.material.html', {'form': formulario,'form_info': formulario_info_material })
+                #elif p  :
+                 #   messages.success(request, f'El codigo {p.codigo_paquete}  ya existe')
+                  #  return render(request, 'materiales/formulario.material.html', {'form': formulario,'form_info': formulario_info_material })
 
                 categoria= formulario.cleaned_data['categoria']
                 cantidad_paquete= formulario_info_material.cleaned_data['cantidad_paquete']
-                cantidad_paquete_unidad= formulario_info_material.cleaned_data['cantidad_paquete_unidad']
+         
                 material= formulario.save(commit=False)
-                material.codigo_paquete= f"{categoria.codigo_clasificacion}-{codigo_paquete }"
-                material.codigo=f"{material.codigo_paquete}-{codigo}"
+                
+                material.codigo=f"{categoria.codigo_clasificacion}-{codigo }"
                 material.stock= cantidad_paquete * cantidad_paquete_unidad
                 material.gestion= gestion
                 material.save()
                 info_material= formulario_info_material.save(commit=False)
                 info_material.material= material
+                info_material.precio_unidad=precio_unidad
                 info_material.save()
                 info_material.calcular_total_cantidad()
                 #info_material.calcular_precio_total()
@@ -127,13 +132,13 @@ def editar_material(request, id_material):
     if request.method == 'POST':
         if formulario_material.is_valid():
             codigo= formulario_material.cleaned_data['codigo']
-            codigo_paquete= formulario_material.cleaned_data['codigo_paquete']
-            antiguo_codigo_paquete=codigo_paquete.split('-')
+            #codigo_paquete= formulario_material.cleaned_data['codigo_paquete']
+            #antiguo_codigo_paquete=codigo_paquete.split('-')
             codigo_antiguo=codigo.split('-')
             categoria= formulario_material.cleaned_data['categoria']
             material= formulario_material.save()
-            material.codigo_paquete= f"{categoria.codigo_clasificacion}-{antiguo_codigo_paquete[1]}"
-            material.codigo=f"{material.codigo_paquete}-{codigo_antiguo[2]} "
+            #material.codigo_paquete= f"{categoria.codigo_clasificacion}-{antiguo_codigo_paquete[1]}"
+            material.codigo=codigo 
             material.save()
             detalle = f'Se ha editado el material con el código: {material.codigo}'
             crear_log_sistema(request.user.username,'Edicion', detalle ,'Materiales')
@@ -209,18 +214,18 @@ def eliminar_categoria(request, id):
 def anadir_nuevo_cantidad(request):
     cantidad_unidad= request.POST['cantidadUnidad']
     cantidad_paquete= request.POST['cantidadPaquete']
-   # precio_paquete= request.POST['precioPaquete']
+    precio_paquete= request.POST['precioPaquete']
     id_material=request.POST['materialId']
     #precio_unidad=request.POST['precio_unidad']
     if not cantidad_unidad or not cantidad_paquete or not id_material:
         return JsonResponse({'data':'Campos obligatorios'})
     totalCantidad = int(cantidad_unidad) * int(cantidad_paquete)
     material=get_object_or_404(Materiales, pk = id_material)
-  
+    precio_unidad = float(precio_paquete) /int(cantidad_unidad) 
     stock = material.stock
     material.stock= int(stock) + totalCantidad
     
-    info_mat = Informacion_material.objects.create(cantidad_paquete= int(cantidad_paquete), cantidad_paquete_unidad= int(cantidad_unidad),material= material)
+    info_mat = Informacion_material.objects.create(precio_paquete=precio_paquete,precio_unidad=precio_unidad,cantidad_paquete= int(cantidad_paquete), cantidad_paquete_unidad= int(cantidad_unidad),material= material)
     info_mat.calcular_total_cantidad()
     #info_mat.calcular_precio_total()
     material.save()

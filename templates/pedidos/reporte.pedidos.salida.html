@@ -31,12 +31,14 @@
             white-space: nowrap;
         }
     }
-    th{
+
+    th {
         background-color: #082E33 !important;
         color: rgb(241, 238, 238) !important;
         font-weight: bold;
     }
-    .row{
+
+    .row {
         color: white;
         font-weight: bold;
     }
@@ -69,15 +71,17 @@
                 <tr>
                     <th style="width: 10%;  font-size: 0.8em;">Código</th>
                     <th style="width: 10%; font-size: 0.8em;">Material</th>
-                    <th style="width: 10%; font-size: 0.8em;">Marca</th>
+
                     <th style="width: 10%; font-size: 0.8em;">Stock</th>
-                    <th style="width: 10%; font-size: 0.8em;">Tamaño</th>
-                    <th style="width: 10%;font-size: 0.8em;">Color</th>
+
+
                     <th style="width: 10%; font-size: 0.8em ">Unidad de Medida</th>
                     <th style="width: 10%; font-size: 0.8em">Factura</th>
                     <th style="width: 10%; font-size: 0.8em">Código de Paquete</th>
                     <th style="width: 10%; font-size: 0.8em">Categoría</th>
                     <th style="width: 10%; font-size: 0.8em">Salida</th>
+                    <th style="width: 10%; font-size: 0.8em">total</th>
+
 
                 </tr>
             </thead>
@@ -86,22 +90,10 @@
                 <tr>
                     <td style="font-size: 0.8em">{{ pedi.material.codigo }}</td>
                     <td style="font-size: 0.8em">{{ pedi.material.nombre }}</td>
-                    <td style="font-size: 0.8em">{{ pedi.material.marca }}</td>
+
                     <td style="font-size: 0.8em">{{ pedi.material.stock }}</td>
-                    <td style="font-size: 0.8em">
-                        {% if pedi.material.tamaño %}
-                        {{ pedi.material.tamaño }}
-                        {% else %}
-                        N/A
-                        {% endif %}
-                    </td>
-                    <td style="font-size: 0.8em">
-                        {% if pedi.material.color %}
-                        {{ pedi.material.color }}
-                        {% else %}
-                        N/A
-                        {% endif %}
-                    </td>
+
+
                     <td style="font-size: 0.8em">
                         {% if pedi.material.unidad_medida %}
                         {{ pedi.material.unidad_medida }}
@@ -136,6 +128,14 @@
                         {{ pedi.cantidad_entrega }}
                         {% else %}
                         N/A
+                        {% endif %}
+                    </td>
+
+                    <td style="font-size: 0.8em">
+                        {% if pedi.precio_total %}
+                        {{ pedi.precio_total }}
+                        {% else %}
+                        0
                         {% endif %}
                     </td>
 

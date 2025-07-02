@@ -15,10 +15,6 @@
                         <th>Código</th>
                         <td>{{ material.codigo }}</td>
                     </tr>
-                    <tr>
-                        <th>Marca</th>
-                        <td>{{ material.marca }}</td>
-                    </tr>
 
                     <tr>
                         <th>Stock</th>
@@ -55,9 +51,9 @@
                     {% if material.precio_paquete %}
                     <tr>
                         <th>Precio Paquete</th>
-                        <td>{{ material.precio_paquete  }}</td>
+                        <td>{{ material.precio_paquete }}</td>
                     </tr>
-                    
+
                     {% endif %}
                     {% if material.material %}
                     <tr>
@@ -90,6 +86,8 @@
                 <tr>
                     <th>Cantidad por Unidad</th>
                     <th>Cantidad por Paquete</th>
+                    <th>Total</th>
+                    <th>Precio unitario</th>
 
                     <th>Fecha</th>
                 </tr>
@@ -97,6 +95,8 @@
                 <tr>
                     <td>{{ data.cantidad_paquete_unidad }}</td>
                     <td>{{ data.cantidad_paquete }}</td>
+                    <td>{{ data.precio_paquete }}</td>
+                    <td>{{ data.precio_unidad }}</td>
                     <td>{{ data.fecha_creacion}}</td>
 
 

@@ -20,7 +20,7 @@ class Pedido(models.Model):
     codigo_numero=models.DecimalField(max_digits=10, decimal_places=2,blank= True ,null= True)
     usuario=models.ForeignKey(Usuario , on_delete=models.RESTRICT , blank= False, null=False)
     material= models.ForeignKey(Materiales, on_delete=models.RESTRICT,  blank= False, null=False)
-
+    precio_total=models.FloatField(blank= True ,null= True, default=0)
 
     aprobado_unidad = models.BooleanField( blank= True, null=True) #director administrativo
     aprobado_oficina = models.BooleanField( blank= True, null=True) 
