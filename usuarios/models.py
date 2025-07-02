@@ -77,7 +77,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
             raise ValidationError(_('Extension de archivo invalido'))
     CARGO_ROLE_CHOICES=[
         ('Presupuestos','Presupuestos'),
-        ('Cardista','Cardista'),
+        ('Cardista','Kardixta'),
         ('Director_administrativo','Director Administrativo'),
         ('Encargado_oficina','Responsable de la oficina'),
         ('Usuario','Personal de la oficina'),

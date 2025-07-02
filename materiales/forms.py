@@ -4,20 +4,20 @@ from proveedor.models import Proveedor
 class Formulario_materiales(forms.ModelForm):
     class Meta:
         model=Materiales
-        fields = ['nombre','proveedor', 'codigo','factura','codigo_paquete' , 'marca',   'tamaño', 'color', 'unidad_medida','unidad_manejo','precio_unidad','precio_paquete', 'material', 'categoria']
+        fields = ['nombre','proveedor', 'codigo','factura','unidad_manejo', 'categoria']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control',}),
             'codigo': forms.TextInput(attrs={'class': 'form-control'}),
-            'marca': forms.TextInput(attrs={'class': 'form-control'}),
+            #'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'factura': forms.TextInput(attrs={'class': 'form-control'}),
-            'tamaño': forms.TextInput(attrs={'class': 'form-control'}),
-            'color': forms.TextInput(attrs={'class': 'form-control'}),
-            'unidad_medida': forms.TextInput(attrs={'class': 'form-control'}),
+            #'tamaño': forms.TextInput(attrs={'class': 'form-control'}),
+            #'color': forms.TextInput(attrs={'class': 'form-control'}),
+            #'unidad_medida': forms.TextInput(attrs={'class': 'form-control'}),
             'unidad_manejo': forms.TextInput(attrs={'class': 'form-control'}),
-            'material': forms.TextInput(attrs={'class': 'form-control'}),
-            'codigo_paquete': forms.TextInput(attrs={'class': 'form-control'}),
-            'precio_unidad': forms.TextInput(attrs={'class': 'form-control'}),
-            'precio_paquete':forms.TextInput(attrs={'class': 'form-control'}),
+            #'material': forms.TextInput(attrs={'class': 'form-control'}),
+            #'codigo_paquete': forms.TextInput(attrs={'class': 'form-control'}),
+            #'precio_unidad': forms.TextInput(attrs={'class': 'form-control'}),
+            #'precio_paquete':forms.TextInput(attrs={'class': 'form-control'}),
         
         }
      
@@ -37,7 +37,7 @@ class Formulario_materiales(forms.ModelForm):
         if instance:
             # Establecer campos de solo lectura
             self.fields['codigo'].widget.attrs['readonly'] = True
-            self.fields['codigo_paquete'].widget.attrs['readonly'] = True
+            #self.fields['codigo_paquete'].widget.attrs['readonly'] = True
 class Formulario_categoria(forms.ModelForm):
     class Meta:
         model=Categoria
@@ -50,10 +50,10 @@ class Formulario_categoria(forms.ModelForm):
 class Form_infomacion_material(forms.ModelForm):
     class Meta:
         model= Informacion_material
-        fields= ['cantidad_paquete', 'cantidad_paquete_unidad']
+        fields= ['cantidad_paquete', 'cantidad_paquete_unidad', 'precio_paquete' ]
         widgets = {
             'cantidad_paquete': forms.TextInput(attrs={'class': 'form-control',}),
             'cantidad_paquete_unidad': forms.TextInput(attrs={'class': 'form-control'}),
             'precio_paquete': forms.TextInput(attrs={'class': 'form-control'}),
-           'precio_unidad': forms.TextInput(attrs={'class': 'form-control'}),
+           #'precio_unidad': forms.TextInput(attrs={'class': 'form-control'}),
         }

@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import   login_required
 import random
-from materiales.models import Materiales
+from materiales.models import Materiales,Informacion_material
 from django.db.models import Q
 from utils.paginador import paginador_general
 from usuarios.models import Usuario
@@ -88,6 +88,13 @@ def realizar_pedido(request):
                  return JsonResponse({"error":"Los campos son obligatorios"})
             usuario = get_object_or_404(Usuario, id=id_usuario)
             material = get_object_or_404(Materiales, id=id_material)
+            detalleMaterial = Informacion_material.objects.filter(material=material).order_by('id').first()
+            precio_total=0
+
+            for x in range(int(cantidad_pedido)):
+                print(detalleMaterial.precio_unidad)
+                precio_total += detalleMaterial.precio_unidad
+          
             if int(cantidad_pedido) <=  0:
                 return JsonResponse({"error":"Ingrese un numero mayor a 0", })
             if int(cantidad_pedido) > material.stock:
@@ -96,7 +103,10 @@ def realizar_pedido(request):
             pedido= Pedido.objects.create(
                                           cantidad_pedida=int(cantidad_pedido),
                                           usuario=usuario,
-                                          material=material)
+                                          material=material,
+                                          precio_total= precio_total
+                                          
+                                          )
       
             material.stock= total
             pedido.save()
