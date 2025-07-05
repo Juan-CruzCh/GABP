@@ -75,9 +75,9 @@
                     <th style="width: 10%; font-size: 0.8em;">Stock</th>
 
 
-                    <th style="width: 10%; font-size: 0.8em ">Unidad de Medida</th>
+                    <!--<th style="width: 10%; font-size: 0.8em ">Unidad de Medida</th>-->
                     <th style="width: 10%; font-size: 0.8em">Factura</th>
-                    <th style="width: 10%; font-size: 0.8em">Código de Paquete</th>
+                    <!--<th style="width: 10%; font-size: 0.8em">Código de Paquete</th>-->
                     <th style="width: 10%; font-size: 0.8em">Categoría</th>
                     <th style="width: 10%; font-size: 0.8em">Salida</th>
                     <th style="width: 10%; font-size: 0.8em">total</th>
@@ -94,13 +94,13 @@
                     <td style="font-size: 0.8em">{{ pedi.material.stock }}</td>
 
 
-                    <td style="font-size: 0.8em">
+                    <!--<td style="font-size: 0.8em">
                         {% if pedi.material.unidad_medida %}
                         {{ pedi.material.unidad_medida }}
                         {% else %}
                         N/A
                         {% endif %}
-                    </td>
+                    </td>-->
                     <td style="font-size: 0.8em">
                         {% if pedi.material.factura %}
                         {{pedi.material.factura }}
@@ -108,13 +108,13 @@
                         N/A
                         {% endif %}
                     </td>
-                    <td style="font-size: 0.8em">
+                    <!--<td style="font-size: 0.8em">
                         {% if pedi.material.codigo_paquete %}
                         {{ pedi.material.codigo_paquete }}
                         {% else %}
                         N/A
                         {% endif %}
-                    </td>
+                    </td>-->
 
                     <td style="font-size: 0.8em">
                         {% if pedi.material.categoria.nombre %}

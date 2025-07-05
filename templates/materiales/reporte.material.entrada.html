@@ -78,13 +78,12 @@
                 <tr>
                     <th style="width: 10%;  font-size: 0.8em;">Código</th>
                     <th style="width: 10%; font-size: 0.8em;">Material</th>
-                    <th style="width: 10%; font-size: 0.8em;">Marca</th>
+                    
                     <th style="width: 10%; font-size: 0.8em;">Stock</th>
-                    <th style="width: 10%; font-size: 0.8em;">Tamaño</th>
-                    <th style="width: 10%;font-size: 0.8em;">Color</th>
-                    <th style="width: 10%; font-size: 0.8em ">Unidad de Medida</th>
+                    
+                    
                     <th style="width: 10%; font-size: 0.8em">Factura</th>
-                    <th style="width: 10%; font-size: 0.8em">Código de Paquete</th>
+                    <!--<th style="width: 10%; font-size: 0.8em">Código de Paquete</th>-->
                     <th style="width: 10%; font-size: 0.8em">Categoría</th>
 
                     <th style="width: 10%; font-size: 0.8em">Cantidad Paquete</th>
@@ -100,9 +99,9 @@
                 <tr>
                     <td style="font-size: 0.8em">{{ material.material.codigo }}</td>
                     <td style="font-size: 0.8em">{{ material.material.nombre }}</td>
-                    <td style="font-size: 0.8em">{{ material.material.marca }}</td>
+                    <!--<td style="font-size: 0.8em">{{ material.material.marca }}</td>-->
                     <td style="font-size: 0.8em">{{ material.material.stock }}</td>
-                    <td style="font-size: 0.8em">
+                    <!--<td style="font-size: 0.8em">
                         {% if material.material.tamaño %}
                         {{ material.material.tamaño }}
                         {% else %}
@@ -115,14 +114,14 @@
                         {% else %}
                         N/A
                         {% endif %}
-                    </td>
-                    <td style="font-size: 0.8em">
+                    </td>--->
+                    <!--<td style="font-size: 0.8em">
                         {% if material.material.unidad_medida %}
                         {{ material.material.unidad_medida }}
                         {% else %}
                         N/A
                         {% endif %}
-                    </td>
+                    </td>-->
                     <td style="font-size: 0.8em">
                         {% if material.material.factura %}
                         {{material.material.factura }}
@@ -130,13 +129,13 @@
                         N/A
                         {% endif %}
                     </td>
-                    <td style="font-size: 0.8em">
+                   <!---- <td style="font-size: 0.8em">
                         {% if material.material.codigo_paquete %}
                         {{ material.material.codigo_paquete }}
                         {% else %}
                         N/A
                         {% endif %}
-                    </td>
+                    </td>--->
                     <td style="font-size: 0.8em">
                         {% if material.material.categoria.nombre %}
                         {{ material.material.categoria.nombre }}

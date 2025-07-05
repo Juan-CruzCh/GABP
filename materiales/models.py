@@ -32,10 +32,10 @@ class Materiales(models.Model):
     #unidad_medida = models.CharField(max_length=255,blank=True, null=True, verbose_name='Unidad de medida')
     unidad_manejo = models.CharField(max_length=255,blank=True, null=True, verbose_name='Unidad de manejo')
     #material = models.CharField(max_length=255,blank=True, null=True)
-    factura = models.CharField(max_length=255,blank=False, null=False,)
+    
     #codigo_paquete = models.CharField(max_length=255, blank=True, null=True,  verbose_name='Codigo de paquete')
     categoria =models.ForeignKey(Categoria, models.CASCADE,blank=False, null=False )
-    proveedor= models.ForeignKey(Proveedor, models.CASCADE,blank=False, null=False)
+    
     es_habilitado=models.BooleanField(default=True)
     gestion=  models.IntegerField(blank=True ,null=True) 
     cierre_gestion=  models.IntegerField(default=False) 
@@ -56,16 +56,18 @@ class Materiales(models.Model):
 
    
 class  Informacion_material(models.Model):
-    cantidad_paquete=models.IntegerField(blank=False, null=False, verbose_name='Cantidad por paquetes')
-    cantidad_paquete_unidad = models.IntegerField(blank=False, null=False,verbose_name='Cantidad')
-    precio_paquete = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,verbose_name='Precio por paquetes')
-    precio_unidad=models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,verbose_name='Precio por Unidad')
+    #cantidad_paquete=models.IntegerField(blank=False, null=False, verbose_name='Cantidad por paquetes')
+    cantidad_paquete_unidad = models.IntegerField(blank=False, null=False,verbose_name='unidad')
+    #precio_paquete = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,verbose_name='Precio por paquetes')
+    precio_unidad=models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,verbose_name='Precio')
     total_precio= models.DecimalField(max_digits=10, decimal_places=2, null=True)
     cantidad=models.IntegerField(null=True, blank=True)
     material = models.ForeignKey(Materiales, models.CASCADE, blank= False, null=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    proveedor= models.ForeignKey(Proveedor, models.CASCADE,blank=False, null=False)
+    factura = models.CharField(max_length=255,blank=False, null=False,)
     def calcular_total_cantidad(self):
-        self.cantidad= self.cantidad_paquete * self.cantidad_paquete_unidad
+       # self.cantidad= self.cantidad_paquete * self.cantidad_paquete_unidad
         self.save()
     def calcular_precio_total(self):
         self.total_precio= self.precio_paquete * self.precio_unidad
