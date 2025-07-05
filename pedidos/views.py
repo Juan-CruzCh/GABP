@@ -244,11 +244,11 @@ def cancelar_todos_los_pedidos(request):
 def listar_pedidos_usuarios_almacen(request):
     pagina_actual = request.GET.get('page', 10)
     pedidos_unidad = Pedido.objects.filter(
-        aprobado_oficina=True,
-        aprobado_unidad=True,
-        
-        aprobado_cardista = True,
-        aprobado_presupuestos = True,
+       # aprobado_oficina=True,
+       # aprobado_unidad=True,
+         estado_de_pedido='realizado'
+       # aprobado_cardista = True,
+       # aprobado_presupuestos = True,
     ).order_by('numero_pedido')
     pedidos_unicos = {}
     for pedido in pedidos_unidad:

@@ -177,10 +177,6 @@ def crear_oficinas(request):
             return JsonResponse({"error": "El valor  ya existe"})
 
 
-
-
-
-
 def listando_usuarios(request):
     pagina_actual = request.GET.get('page', 10)
     listado_cuentas_usuarios = Usuario.objects.select_related('persona').filter(es_habilitado=True)

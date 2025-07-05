@@ -46,13 +46,14 @@ def crear_material(request):
         gestion = fecha_actual.year
         formulario= Formulario_materiales(request.POST)
         formulario_info_material= Form_infomacion_material(request.POST)
+        print (request.POST)
         if(formulario.is_valid() and formulario_info_material.is_valid()):
            try:
                 codigo= formulario.cleaned_data['codigo']
                 cantidad_paquete_unidad= formulario_info_material.cleaned_data['cantidad_paquete_unidad']
-                precio_paquete= formulario_info_material.cleaned_data['precio_paquete']
+                precio_unidad= formulario_info_material.cleaned_data['precio_unidad']
               
-                precio_unidad = precio_paquete / cantidad_paquete_unidad
+                precio_unidad = precio_unidad * cantidad_paquete_unidad
                 #codigo_paquete= formulario.cleaned_data['codigo_paquete']
                 c = Materiales.objects.filter(codigo= codigo, es_habilitado=True).first()
                 #p = Materiales.objects.filter(codigo_paquete= codigo_paquete,  es_habilitado=True).first()
@@ -65,19 +66,19 @@ def crear_material(request):
                   #  return render(request, 'materiales/formulario.material.html', {'form': formulario,'form_info': formulario_info_material })
 
                 categoria= formulario.cleaned_data['categoria']
-                cantidad_paquete= formulario_info_material.cleaned_data['cantidad_paquete']
+                #cantidad_paquete= formulario_info_material.cleaned_data['cantidad_paquete']
          
                 material= formulario.save(commit=False)
                 
                 material.codigo=f"{categoria.codigo_clasificacion}-{codigo }"
-                material.stock= cantidad_paquete * cantidad_paquete_unidad
+                material.stock= cantidad_paquete_unidad
                 material.gestion= gestion
                 material.save()
                 info_material= formulario_info_material.save(commit=False)
                 info_material.material= material
                 info_material.precio_unidad=precio_unidad
                 info_material.save()
-                info_material.calcular_total_cantidad()
+                #info_material.calcular_total_cantidad()
                 #info_material.calcular_precio_total()
                 detalle=f'Se ha creado una nuevo material: {material.nombre} con el codigo {material.codigo}'
                 crear_log_sistema(request.user.username,'Registrado', detalle ,'Materiales')
