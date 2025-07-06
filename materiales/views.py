@@ -53,7 +53,7 @@ def crear_material(request):
                 cantidad_paquete_unidad= formulario_info_material.cleaned_data['cantidad_paquete_unidad']
                 precio_unidad= formulario_info_material.cleaned_data['precio_unidad']
               
-                precio_unidad = precio_unidad * cantidad_paquete_unidad
+                precio_total = precio_unidad * cantidad_paquete_unidad
                 #codigo_paquete= formulario.cleaned_data['codigo_paquete']
                 c = Materiales.objects.filter(codigo= codigo, es_habilitado=True).first()
                 #p = Materiales.objects.filter(codigo_paquete= codigo_paquete,  es_habilitado=True).first()
@@ -77,6 +77,7 @@ def crear_material(request):
                 info_material= formulario_info_material.save(commit=False)
                 info_material.material= material
                 info_material.precio_unidad=precio_unidad
+                info_material.total_precio=precio_total
                 info_material.save()
                 #info_material.calcular_total_cantidad()
                 #info_material.calcular_precio_total()

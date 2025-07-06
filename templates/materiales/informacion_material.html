@@ -20,10 +20,10 @@
                         <th>Stock</th>
                         <td>{{ material.stock }}</td>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <th>Fecha de Creación</th>
                         <td>{{ material.fecha_creacion }}</td>
-                    </tr>
+                    </tr>-->
                     {% if material.tamaño %}
                     <tr>
                         <th>Tamaño</th>
@@ -74,30 +74,39 @@
                     </tr>
                     {% endif %}
                     {% if material.categoria.nombre %}
-                    <tr>
+                   <!--- <tr>
                         <th>Factura</th>
                         <td>{{ material.factura }}</td>
-                    </tr>
+                    </tr>-->
                     {% endif %}
                 </tbody>
             </table>
 
             <table class="table table-bordered">
                 <tr>
-                    <th>Cantidad por Unidad</th>
-                    <th>Cantidad por Paquete</th>
-                    <th>Total</th>
+                    <!--<th>Cantidad por Unidad</th>-->
+                    <th>Cantidad </th>
+                    <th>precio total</th>
                     <th>Precio unitario</th>
+                     
+                    <th>Factura</th>
+                    <th>Proveedor</th>
 
-                    <th>Fecha</th>
+                    <th>Fecha ingreso</th>
                 </tr>
                 {% for data in data_info_material %}
                 <tr>
                     <td>{{ data.cantidad_paquete_unidad }}</td>
-                    <td>{{ data.cantidad_paquete }}</td>
-                    <td>{{ data.precio_paquete }}</td>
+                    <!--<td>{{ data.cantidad_paquete }}</td>
+                    <td>{{ data.precio_paquete }}</td>-->
+                 <td>{{data.total_precio}}</td>
                     <td>{{ data.precio_unidad }}</td>
+                    
+                    <td>{{data.factura}}</td>
+                    <td>{{data.proveedor.persona.nombre}}</td>
                     <td>{{ data.fecha_creacion}}</td>
+                    
+                    
 
 
                 </tr>
