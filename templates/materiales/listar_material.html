@@ -133,26 +133,34 @@
                                 action="{% url 'anadir_cantidad' %}" onsubmit="return false;">
 
                                 {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="cantidadPaquete{{ material.id }}">Cantidad de Paquete</label>
-                                    <input type="number" class="form-control" id="cantidadPaquete{{ material.id }}"
-                                        name="cantidadPaquete" required>
+                                <div class="col-md-4">
+                                    <label for="proveedor" class="form-label">proveedor</label>
+                                    <select name="proveedor" id="proveedor" class="form-select" required>
+                                        <option value="">-- Todas el proveedor --</option>
+                                        {% for cat in proveedor %}
+                                        <option value="{{ cat.pk }}">
+                                            {{ cat.persona.nombre }} {{ cat.persona.apellidos }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="cantidadUnidad{{ material.id }}">Factura</label>
+                                    <input type="text" class="form-control" id="cantidadUnidad{{ material.id }}"
+                                        name="factura" required>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="cantidadUnidad{{ material.id }}">Cantidad de Unidad</label>
                                     <input type="number" class="form-control" id="cantidadUnidad{{ material.id }}"
                                         name="cantidadUnidad" required>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="cantidadUnidad{{ material.id }}">Precio por paquete</label>
-                                    <input type="number" class="form-control" id="cantidadUnidad{{ material.id }}"
-                                        name="precioPaquete" required>
-                                </div>
-                                <!-- <div class="form-group">
                                     <label for="cantidadUnidad{{ material.id }}">Precio por unidad</label>
                                     <input type="number" class="form-control" id="cantidadUnidad{{ material.id }}"
                                         name="precio_unidad" required>
-                                </div>-->
+                                </div>
                             </form>
                         </div>
                         <span id="mensaje" class="text-center"></span>

@@ -1,4 +1,5 @@
 
+from decimal import Decimal
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 
@@ -7,6 +8,7 @@ from utils.paginador import paginador_general
 from .forms import Formulario_categoria,Formulario_materiales,Form_infomacion_material
 from django.http import JsonResponse
 from pedidos.models import Pedido
+from proveedor.models import Proveedor
 
 from datetime import datetime
 
@@ -110,7 +112,9 @@ def listado_material(request, id_categoria):#lista todos los material por catego
     listar_productos_categoria= Materiales.objects.select_related('categoria').filter(categoria_id=id_categoria,es_habilitado=True, gestion = gestion, cierre_gestion=False)
     listar_productos_categoria=paginador_general(request, listar_productos_categoria, pagina_actual)
     nombre_categoria = Categoria.objects.get(pk=id_categoria)#trae el nombre de la categoria para el sud titulo
+    proveedor = Proveedor.objects.filter(es_habilitado= True)
     context={
+        'proveedor':proveedor,
         'data':listar_productos_categoria,
         'nombre_categoria':nombre_categoria,
         'id_categoria':id_categoria
@@ -214,21 +218,24 @@ def eliminar_categoria(request, id):
     return redirect('crear_categoria')
 
 def anadir_nuevo_cantidad(request):
+    print(request)
     cantidad_unidad= request.POST['cantidadUnidad']
-    cantidad_paquete= request.POST['cantidadPaquete']
-    precio_paquete= request.POST['precioPaquete']
+    proveedor= request.POST['proveedor']
+    proveedor = get_object_or_404(Proveedor, pk=proveedor)
+    factura=request.POST['factura']
     id_material=request.POST['materialId']
-    #precio_unidad=request.POST['precio_unidad']
-    if not cantidad_unidad or not cantidad_paquete or not id_material:
+    precio_unidad=request.POST['precio_unidad']
+    if not cantidad_unidad  or not id_material:
         return JsonResponse({'data':'Campos obligatorios'})
-    totalCantidad = int(cantidad_unidad) * int(cantidad_paquete)
+    totalCantidad = int(cantidad_unidad) 
+    totalPrecio= int(cantidad_unidad) * precio_unidad
     material=get_object_or_404(Materiales, pk = id_material)
-    precio_unidad = float(precio_paquete) /int(cantidad_unidad) 
+    precio_unidad =precio_unidad 
     stock = material.stock
     material.stock= int(stock) + totalCantidad
     
-    info_mat = Informacion_material.objects.create(precio_paquete=precio_paquete,precio_unidad=precio_unidad,cantidad_paquete= int(cantidad_paquete), cantidad_paquete_unidad= int(cantidad_unidad),material= material)
-    info_mat.calcular_total_cantidad()
+    info_mat = Informacion_material.objects.create(factura=factura,proveedor=proveedor,total_precio=totalPrecio,precio_unidad=precio_unidad, cantidad_paquete_unidad= int(cantidad_unidad),material= material)
+    #info_mat.calcular_total_cantidad()
     #info_mat.calcular_precio_total()
     material.save()
     info_mat.save()
@@ -369,24 +376,40 @@ def inventario_fisico(request):
 
 def reportePartida(request):
     categorias = Categoria.objects.filter(es_habilitado=True)
-    
+    data=[]
     if request.method == 'POST':
         categoria_id = request.POST.get('categoria')
         fecha_inicio = request.POST.get('fecha_inicio')
         fecha_fin = request.POST.get('fecha_fin')
         categoria = get_object_or_404(Categoria, pk = categoria_id)
         material = Materiales.objects.filter(categoria= categoria)
-        data=[]
+      
 
 
         for m in material:
-            pedido = Pedido.objects.filter(aprobado_almacen= True)
+            pedidos = Pedido.objects.filter(aprobado_almacen= True, material =m)
+            detalleMaterial= Informacion_material.objects.filter(material = m)
+            ultimoCOsto = detalleMaterial.order_by('-id').first()
+            if ultimoCOsto:
+                precio_unidad = ultimoCOsto.precio_unidad   
+            else:
+                precio_unidad = 0
+            total_cantidad = sum(p.cantidad_entrega for p in pedidos)
+            cantidadImgresos = sum(p.cantidad_paquete_unidad for p in detalleMaterial)
+            costoIngresos = sum(p.precio_unidad for p in detalleMaterial)
+            precio_total = sum(p.precio_total for p in pedidos)
             object = {
                 "codigo":m.codigo,
                 "descripcion":f"{m.nombre}",
                 "unidad":m.unidad_manejo,
                 "saldo_cantidad":m.stock,
-                "saldo_costo":m.stock 
+                "saldo_costo":m.stock * precio_unidad,
+                "cantidad_salida":total_cantidad,
+                "cantidadIngresos":cantidadImgresos,
+                "costoIngresos":costoIngresos,
+                "costoSalida":precio_total,
+                "cant": m.stock  - total_cantidad,
+                "saldo":Decimal(m.stock) * Decimal(precio_unidad) - Decimal(precio_total)
             }
             data.append(object)
 
