@@ -219,7 +219,7 @@ def cambiar_estado_pedido(request):
                 enviar_notificacion_pedido(request,pedido) 
                 detalle = f'El usuario {request.user.username} ha realizado un pedido con el ID {pedido.id}.'
                 crear_log_sistema(request.user.username, 'Realizar pedido', detalle, 'Pedidos')   
-            return JsonResponse({'status': 'success', 'ids': ids})
+            return JsonResponse({'status': 'success', 'ids': ids, 'numero':numero})
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
@@ -242,28 +242,40 @@ def cancelar_todos_los_pedidos(request):
 #------------------------------
 @login_required
 def listar_pedidos_usuarios_almacen(request):
-    pagina_actual = request.GET.get('page', 10)
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
     pedidos_unidad = Pedido.objects.filter(
-       # aprobado_oficina=True,
-       # aprobado_unidad=True,
-         estado_de_pedido='realizado'
-       # aprobado_cardista = True,
-       # aprobado_presupuestos = True,
+        estado_de_pedido='realizado'
     ).order_by('numero_pedido')
+
+    print(fecha_inicio)
+    if fecha_inicio and fecha_fin:
+        try:
+            fecha_inicio_dt = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+            fecha_fin_dt = datetime.strptime(fecha_fin, '%Y-%m-%d')
+            fecha_fin_dt = fecha_fin_dt.replace(hour=23, minute=59, second=59)
+            pedidos_unidad = pedidos_unidad.filter(
+                fecha_pedido__gte=fecha_inicio_dt,
+                fecha_pedido__lte=fecha_fin_dt
+            )
+        except ValueError:
+            pass  # Evita errores si la fecha no tiene formato válido
+
     pedidos_unicos = {}
     for pedido in pedidos_unidad:
         if pedido.numero_pedido not in pedidos_unicos:
             pedidos_unicos[pedido.numero_pedido] = pedido
 
     pedidos_unicos_list = list(pedidos_unicos.values())
-    pedidos_unicos_list=paginador_general(request, pedidos_unicos_list, pagina_actual)
-
+  
     context = {
-        'data': pedidos_unicos_list
+        'data': pedidos_unicos_list,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
     }
 
     return render(request, 'pedidos/listar_pedido.html', context)
-
     
 
 
@@ -343,52 +355,64 @@ def realizar_entrega(request):
      
 
 @login_required
-def mis_pedidos(request): #muestra los pedidos de cada unidad o secretaria
-    id_usuario= request.user.id
-    fechaActual = datetime.now()
+def mis_pedidos(request):
+    fecha_actual = datetime.now()
+    user = request.user
+    usuario = get_object_or_404(Usuario, pk=user.id)
+
+    fecha_inicio = None
+    fecha_fin = None
+    pedidos_unicos_list = []
+
     if request.method == 'POST':
-        fecha_inicio = request.POST['fecha_inicio']
-        fecha_fin = request.POST['fecha_fin']
-        fecha_inicio_dt = datetime.strptime(fecha_inicio, '%Y-%m-%d')
-        fecha_fin_dt = datetime.strptime(fecha_fin, '%Y-%m-%d')
-        fecha_fin_dt = fecha_fin_dt.replace(hour=23, minute=59, second=59)
-        pagina_actual = request.GET.get('limit', 10)
-        pedidos= Pedido.objects.select_related('usuario').filter(
-                    usuario_id=id_usuario,
-                     estado_de_pedido='realizado',
-                     fecha_pedido__gte=fecha_inicio_dt,
-                       fecha_pedido__lte=fecha_fin_dt,
-                    
+        try:
+            fecha_inicio_str = request.POST.get('fecha_inicio')
+            fecha_fin_str = request.POST.get('fecha_fin')
 
-                     ).order_by('-fecha_pedido')
+            if not fecha_inicio_str or not fecha_fin_str:
+                raise ValueError("Fechas incompletas.")
 
-        pedidos= paginador_general(request, pedidos, pagina_actual)
-        context={
-        'data':pedidos,
-         'fecha_inicio':fecha_inicio,
-         'fecha_fin':fecha_fin,
-        'title':'Mis pedidos'   
-        }
-        return render(request, 'pedidos/mis_pedidos.html', context)
+            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d')
+            fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d')
+            fecha_fin = fecha_fin.replace(hour=23, minute=59, second=59)
 
-    fecha_inicio_dt = datetime(fechaActual.year, fechaActual.month, fechaActual.day)  # Inicio del día
-    fecha_fin_dt = fecha_inicio_dt + timedelta(days=1)
-    pagina_actual = request.GET.get('limit', 10)
-    pedidos= Pedido.objects.select_related('usuario').filter(
-                    usuario_id=id_usuario,
-                     estado_de_pedido='realizado',
-                     fecha_pedido__gte=fecha_inicio_dt,
-                       fecha_pedido__lte=fecha_fin_dt,
-                    
+            # Filtrar pedidos por usuario, estado y fechas
+            pedidos_unidad = Pedido.objects.filter(
+                usuario=usuario,
+                estado_de_pedido='realizado',
+                fecha_pedido__range=(fecha_inicio, fecha_fin)
+            ).order_by('numero_pedido')
 
-                     ).order_by('-fecha_pedido')
-                                        
-    pedidos= paginador_general(request, pedidos, pagina_actual)
-    context={
-        'data':pedidos,
-        'title':'Mis pedidos'   
-    }
-    return render(request, 'pedidos/mis_pedidos.html', context)
+            # Obtener pedidos únicos por número
+            pedidos_unicos = {}
+            for pedido in pedidos_unidad:
+                pedidos_unicos[pedido.numero_pedido] = pedido
+
+            pedidos_unicos_list = list(pedidos_unicos.values())
+
+
+            context = {
+                'data': pedidos_unicos_list,
+                'fecha_inicio': fecha_inicio_str,
+                'fecha_fin': fecha_fin_str,
+                'title': 'Mis pedidos'
+            }
+
+            return render(request, 'pedidos/mis_pedidos.html', context)
+
+        except ValueError as e:
+            return render(request, 'pedidos/mis_pedidos.html', {
+                'error': f'Error en las fechas: {str(e)}',
+                'title': 'Mis pedidos'
+            })
+
+    # Si no es POST, mostrar la vista vacía
+    return render(request, 'pedidos/mis_pedidos.html', {
+        'data': [],
+        'fecha_inicio': '',
+        'fecha_fin': '',
+        'title': 'Mis pedidos'
+    })
 
 @login_required
 def lista_pedidos_por_estado(request,estado):
@@ -1198,3 +1222,11 @@ def asignar_partida_presupuestada(request):
         pedi.partida_presupuestada= partida
         pedi.save()
         return JsonResponse({'data':'Guardado'})
+
+def mostrarPedidosRealizados(request, codigo):
+    pedido= Pedido.objects.filter(numero_pedido=codigo)
+    context = {
+        'data': pedido
+    }
+    print(pedido)
+    return render(request, 'pedidos/mostrarPedidosRealizados.html', context)

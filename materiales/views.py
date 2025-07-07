@@ -364,3 +364,36 @@ def inventario_fisico(request):
         'data': data
     }
     return render(request, 'materiales/inventarioFisico.html', context)
+
+
+
+def reportePartida(request):
+    categorias = Categoria.objects.filter(es_habilitado=True)
+    
+    if request.method == 'POST':
+        categoria_id = request.POST.get('categoria')
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_fin = request.POST.get('fecha_fin')
+        categoria = get_object_or_404(Categoria, pk = categoria_id)
+        material = Materiales.objects.filter(categoria= categoria)
+        data=[]
+
+
+        for m in material:
+            pedido = Pedido.objects.filter(aprobado_almacen= True)
+            object = {
+                "codigo":m.codigo,
+                "descripcion":f"{m.nombre}",
+                "unidad":m.unidad_manejo,
+                "saldo_cantidad":m.stock,
+                "saldo_costo":m.stock 
+            }
+            data.append(object)
+
+
+    context = {
+        'categorias':categorias,
+        "reporte":data
+    }
+    return render(request, 'materiales/reportePartida.html', context)
+

@@ -2,16 +2,15 @@
 {% load static %}
 {% block usuario %}
 <style>
-    th{
+    th {
         background-color: #082E33 !important;
         color: rgb(241, 238, 238) !important;
     }
+
     .texto-blanco {
-    color: white;
-    font-weight: bold;
-}
-
-
+        color: white;
+        font-weight: bold;
+    }
 </style>
 <div class="container-fluid mt-5">
     <div class="row">
@@ -58,7 +57,7 @@
                             <th>Gestion</th>
                             <th>Código</th>
                             <th>Nombre</th>
-                           
+
                             <th>Estado</th>
                             <th>Acción</th>
                         </tr>
@@ -69,7 +68,7 @@
                             <td>{{ material.gestion }}</td>
                             <td>{{ material.codigo }}</td>
                             <td>{{ material.nombre }}</td>
-                            
+
                             <td>{% if material.stock > 0 %}
                                 Disponible
                                 {% else %}
@@ -119,7 +118,7 @@
                 <form id="pedido_formulario">
                     {% csrf_token %}
                     <!-- Detalles del Pedido -->
-                    <legend class="text-muted" >Informacion del material</legend>
+                    <legend class="text-muted">Informacion del material</legend>
                     <div class="form-group">
                         <label for="productos" class="font-weight-bold">Material</label>
                         <ul id="productos" class="list-group">
@@ -242,7 +241,9 @@
 
             axios.get(`/cambiar_estado_pedido?${queryString}`)
                 .then((result) => {
-                    window.location.reload()
+                    const codigo = result.data.numero;
+                    window.location.href = `/pedido/mostrarPedidoRealizado/${codigo}`;
+                    //window.location.reload()
                 })
                 .catch((err) => {
                     console.error(err); // Muestra el error en la consola
@@ -312,5 +313,3 @@
     })
 </script>
 {% endblock js %}
-
-

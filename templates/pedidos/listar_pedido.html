@@ -2,55 +2,105 @@
 
 {% block index %}
 <style>
-     th{
+    th {
         background-color: #082E33 !important;
         color: rgb(241, 238, 238) !important;
     }
-    h2{
+
+    h2 {
         color: white;
-         font-weight: bold;
+        font-weight: bold;
     }
 </style>
 
-<div class="container">
-    <div class="container mt-5">
-        <h2>Tabla de Pedidos</h2>
-        <form action="{% url 'listando_pedidos' %}" method="GET">
-            <select id="num" name="page">
-                <option name="page" value="10">10</option>
-                <option name="page" value="20">20</option>
-                <option name="page" value="50">50</option>
-                <option name="page" value="100">100</option>
-                <option name="page" value="200">200</option>
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<div class="container mt-5">
+    <h2>Tabla de Pedidos</h2>
+
+    <form action="{% url 'listando_pedidos' %}" method="GET" class="row mb-3">
+        <div class="col-md-3">
+            <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control"
+                value="{{ request.GET.fecha_inicio }}">
+        </div>
+        <div class="col-md-3">
+            <label for="fecha_fin" class="form-label">Fecha Fin</label>
+            <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+        </div>
+        <div class="col-md-2">
+            <label for="num" class="form-label">Filas</label>
+            <select id="num" name="page" class="form-select">
+
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
             </select>
-            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
-        </form>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Codigo</th>
-                    <th>Nombre completo</th>
-                    <th>Unidad</th>
-                    <th>Fecha</th>
-                    <th>Informacion</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pedido in data %}
-                <tr>
-                    <td>{{ pedido.numero_pedido}}</td>
-                    <td> {{ pedido.usuario.persona.nombre }} {{ pedido.usuario.persona.apellidos}} </td>
-                    <td>{{ pedido.usuario.unidad.nombre}}</td>
-                    <td>{{ pedido.fecha_pedido}}</td>
-                    <td><a href="{% url 'informacion_pedido' pedido.numero_pedido %}"
-                            class="btn btn-info btn-sm">Info</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% include 'paginador/paginador.html' %}
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+
+    <table id="tablaPedidos" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Nombre completo</th>
+                <th>Unidad</th>
+                <th>Fecha</th>
+                <th>Informacion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in data %}
+            <tr>
+                <td>{{ pedido.numero_pedido }}</td>
+                <td>{{ pedido.usuario.persona.nombre }} {{ pedido.usuario.persona.apellidos }}</td>
+                <td>{{ pedido.usuario.unidad.nombre }}</td>
+                <td>{{ pedido.fecha_pedido }}</td>
+                <td>
+                    <a href="{% url 'informacion_pedido' pedido.numero_pedido %}" class="btn btn-info btn-sm">Info</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </div>
 
 {% endblock index %}
+
+{% block js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- DataTables en español -->
+<script>
+    $(document).ready(function () {
+        $('#tablaPedidos').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            pageLength: 20,
+            lengthMenu: [[20, 50, 100, 200], [20, 50, 100, 200]],
+            order: []
+        });
+
+        // Rellenar fechas si no vienen en GET
+        const today = new Date();
+        const formatted = today.toISOString().split('T')[0];
+        if (!document.getElementById('fecha_inicio').value) {
+            document.getElementById('fecha_inicio').value = formatted;
+        }
+        if (!document.getElementById('fecha_fin').value) {
+            document.getElementById('fecha_fin').value = formatted;
+        }
+    });
+</script>
+{% endblock js %}

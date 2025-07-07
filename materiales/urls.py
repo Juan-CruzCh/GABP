@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import crear_categoria,inventario_fisico,reporte_gestion,cerrar_gestion,reporte_materiales_entrada,anadir_nuevo_cantidad,eliminar_categoria,actualizar_categoria,listar_categoria_id ,crear_material, listado_material,informacion_material, softDelete, editar_material, inprimir
+from .views import reportePartida,crear_categoria,inventario_fisico,reporte_gestion,cerrar_gestion,reporte_materiales_entrada,anadir_nuevo_cantidad,eliminar_categoria,actualizar_categoria,listar_categoria_id ,crear_material, listado_material,informacion_material, softDelete, editar_material, inprimir
 urlpatterns = [
     path('crear_categoria', crear_categoria, name='crear_categoria'),
       path('crear_material', crear_material, name='crear_material'), 
@@ -19,6 +19,7 @@ urlpatterns = [
                 path('cerrar/gestion',cerrar_gestion , name='cerrar_gestion' ),
                  path('reporte/gestion',reporte_gestion , name='reporte_gestion' ),
                    path('inventario/fisico',inventario_fisico , name='inventario_fisico' ),
+                       path('reportePartida',reportePartida , name='reportePartida' ),
   
 
 
