@@ -51,8 +51,8 @@ class Materiales(models.Model):
 
  
     def __str__(self) -> str:
-        return f"""{self.nombre},{self.codigo},{self.marca},{self.fecha_creacion},
-        {self.tamaño},{self.unidad_medida},{self.material},{self.codigo_paquete},{self.precio_paquete},{self.precio_unidad},{self.categoria}"""
+        return f"""{self.nombre},{self.codigo},{self.fecha_creacion},
+       {self.categoria}"""
 
    
 class  Informacion_material(models.Model):
