@@ -13,6 +13,7 @@ urlpatterns = [
      
      path('verificar/<int:id>',verificar  , name='verificar'),
       path('entregados/material/costos',listar_material_compras_entregadas  , name='listar_material_compras_entregadas'),
+      path('entrada/<str:numero>',entrada  , name='entrada'),
    
    
 ]

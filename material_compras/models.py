@@ -10,7 +10,7 @@ class Numero_registro(models.Model):
 
 
 class Matarial_compras(models.Model):
-    item = models.AutoField(primary_key=True) 
+    item = models.IntegerField() 
     descripcion= models.TextField(max_length=255, blank= False ,null= False)
     orden_compra=models.CharField(max_length=20, blank= False ,null= False)
     numero_formulario= models.IntegerField(default=0)

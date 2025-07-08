@@ -16,5 +16,5 @@ class Proveedor(models.Model):
     es_habilitado=models.BooleanField(default=True)
     
     def __str__(self) -> str:
-        return f"{self.id} {self.empresa}, {self.nit}, {self.telefono}, {self.correo}, {self.pais}, {self.direccion}, {self.fecha_creacion}"
+        return f"{self.persona.nombre}, {self.nit}"
     
