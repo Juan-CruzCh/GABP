@@ -38,7 +38,7 @@
 
                 <th>Secretaria</th>
                 <th>Unidad</th>
-                <th>Oficina</th>
+
                 <th>Proveedor</th>
                 <th>Stock</th>
                 <th>Fecha</th>
@@ -53,9 +53,9 @@
                 <td>{{ material.descripcion|default:"" }}</td>
                 <td>{{ material.unidad_manejo|default:"" }}</td>
 
-                <td>{{ material.secretaria|default:"" }}</td>
+                <td>{{ material.unidad.secretaria.secretaria|default:"" }}</td>
                 <td>{{ material.unidad|default:"" }}</td>
-                <td>{{ material.oficina|default:"" }}</td>
+
                 <td>{{ material.proveedor.empresa}} -{{ material.proveedor.persona.nombre }}
                     {{material.proveedor.persona.apellidos}}</td>
                 <td>{{ material.cantidad|default_if_none:0 }}</td>

@@ -3,6 +3,7 @@
 {% block index %}
 <div class="container mt-4">
     <h2 class="text-center">NOTA DE RECEPCIÓN</h2>
+
     {% if messages %}
     <div>
         {% for message in messages %}
@@ -12,231 +13,251 @@
         {% endfor %}
     </div>
     {% endif %}
-    <form method="POST" action="{% url 'crear' %}">
-        {% csrf_token %}
 
+    <form id="formularioMaterial">
+        {% csrf_token %}
 
         <h5 class="mt-4">Información General</h5>
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="secretaria" class="form-label">Secretaría:</label>
+                <label class="form-label">Secretaría:</label>
                 {{ form.secretaria }}
             </div>
             <div class="col-md-6">
-                <label for="unidad" class="form-label">Unidad:</label>
+                <label class="form-label">Unidad:</label>
                 {{ form.unidad }}
             </div>
         </div>
 
         <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="oficina" class="form-label">Oficina:</label>
+            <div hidden class="col-md-6">
+                <label class="form-label">Oficina:</label>
                 {{ form.oficina }}
             </div>
             <div class="col-md-6">
-                <label for="proveedor" class="form-label">Proveedor:</label>
+                <label class="form-label">Proveedor:</label>
                 {{ form.proveedor }}
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="descripcion" class="form-label">Descripción:</label>
+                <label class="form-label">Descripción:</label>
                 {{ form.descripcion }}
             </div>
             <div class="col-md-6">
-                <label for="unidad_manejo" class="form-label">Unidad de Manejo:</label>
+                <label class="form-label">Unidad de Manejo:</label>
                 {{ form.unidad_manejo }}
             </div>
         </div>
 
-        <!--   
-        <h5 class="mt-4">Datos del Dueño del Proveedor</h5>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del dueño">
-            </div>
-            <div class="col-md-4">
-                <label for="apellido1" class="form-label">Apellido Paterno:</label>
-                <input type="text" class="form-control" id="apellido1" name="apellido1" placeholder="Apellido Paterno">
-            </div>
-            <div class="col-md-4">
-                <label for="apellido2" class="form-label">Apellido Materno:</label>
-                <input type="text" class="form-control" id="apellido2" name="apellido2" placeholder="Apellido Materno">
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="ci" class="form-label">C.I.:</label>
-                <input type="text" class="form-control" id="ci" name="ci" placeholder="C.I.">
-            </div>
-        </div> -->
-
-        <!-- Section: Invoice Details -->
         <h5 class="mt-4">Datos de Factura</h5>
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="factura" class="form-label">Número de Factura:</label>
+                <label class="form-label">Número de Factura:</label>
                 {{ form.factura }}
             </div>
             <div class="col-md-6">
-                <label for="orden_compra" class="form-label">Orden de Compra:</label>
+                <label class="form-label">Orden de Compra:</label>
                 {{ form.orden_compra }}
             </div>
         </div>
 
-
-
-        <!-- Section: Total -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="cantidad" class="form-label">Cantidad Total:</label>
+                <label class="form-label">Cantidad Total:</label>
                 {{ form.cantidad }}
             </div>
             <div class="col-md-6">
-                <label for="costo_total" class="form-label">Costo unitario:</label>
+                <label class="form-label">Costo Unitario:</label>
                 {{ form.costo_unitario }}
             </div>
         </div>
+
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="cantidad" class="form-label">Fecha de compra:</label>
+                <label class="form-label">Fecha de Compra:</label>
                 {{ form.fecha_compra }}
             </div>
-
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary">Registrar</button>
+            <button type="button" class="btn btn-success" id="agregarFila">Agregar a tabla</button>
         </div>
     </form>
 
-    {% if data|length > 0 %}
-    <!-- Section: Formulario -->
-    <h5 class="mt-4">Formulario de Detalles</h5>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ITEM</th>
-                    <th>DESCRIPCIÓN</th>
-                    <th>UNIDAD</th>
-                    <th>CANTIDAD</th>
-                    <th>COSTO UNITARIO</th>
-                    <th>Accion</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for compras in data%}
-                <tr>
-                    <td> {{compras.item}}</td>
-                    <td>{{compras.descripcion}}</td>
-                    <td>{{compras.unidad}}</td>
-                    <td>{{compras.cantidad}}</td>
-                    <td>{{compras.costo_unitario}}</td>
-                    <td><button onclick="eliminar('{{ compras.item }}')">Cancelar</button></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="text-center mt-4">
-            <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
-        </div>
+    <hr>
+    <h4 class="mt-4">Detalle de Materiales Registrados</h4>
+    <table class="table table-bordered" id="tablaMateriales">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Descripción</th>
+                <th>Unidad de Manejo</th>
+                <th>Cantidad</th>
+                <th>Costo Unitario</th>
+                <th>Costo Total</th>
+
+                <th>proveedor</th>
+                <th>unidad</th>
+                <th>Fecha Compra</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Filas dinámicas -->
+        </tbody>
+    </table>
+
+    <div class="text-end">
+        <button class="btn btn-primary" id="guardarTodo">Guardar Todo</button>
     </div>
-    {% endif %}
 </div>
 {% endblock index %}
+
+
 {% block js %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         const secretariaSelect = document.getElementById('id_secretaria');
         const unidadSelect = document.getElementById('id_unidad');
         const oficinaSelect = document.getElementById('id_oficina');
 
         secretariaSelect.addEventListener('change', function () {
             const secretariaId = this.value;
-
-
             unidadSelect.innerHTML = '<option value="">Seleccione una unidad</option>';
             oficinaSelect.innerHTML = '<option value="">Seleccione una oficina</option>';
 
             if (secretariaId) {
                 axios.get("{% url 'cargar_unidades' %}", {
                     params: { secretaria: secretariaId }
-                })
-                    .then(function (response) {
-                        const unidades = response.data;
-                        unidades.forEach(function (unidad) {
-                            const option = document.createElement('option');
-                            option.value = unidad.id;
-                            option.textContent = unidad.nombre;
-                            unidadSelect.appendChild(option);
-                        });
-                    })
-                    .catch(function (error) {
-                        console.error('Error al cargar unidades:', error);
+                }).then(function (response) {
+                    const unidades = response.data;
+                    unidades.forEach(function (unidad) {
+                        const option = document.createElement('option');
+                        option.value = unidad.id;
+                        option.textContent = unidad.nombre;
+                        unidadSelect.appendChild(option);
                     });
+                }).catch(function (error) {
+                    console.error('Error al cargar unidades:', error);
+                });
             }
         });
 
         unidadSelect.addEventListener('change', function () {
             const unidadId = this.value;
-
             oficinaSelect.innerHTML = '<option value="">Seleccione una oficina</option>';
 
             if (unidadId) {
                 axios.get("{% url 'cargar_oficinas' %}", {
                     params: { unidad: unidadId }
-                })
-                    .then(function (response) {
-                        const oficinas = response.data;
-                        oficinas.forEach(function (oficina) {
-                            const option = document.createElement('option');
-                            option.value = oficina.id;
-                            option.textContent = oficina.nombre;
-                            oficinaSelect.appendChild(option);
-                        });
-                    })
-                    .catch(function (error) {
-                        console.error('Error al cargar oficinas:', error);
+                }).then(function (response) {
+                    const oficinas = response.data;
+                    oficinas.forEach(function (oficina) {
+                        const option = document.createElement('option');
+                        option.value = oficina.id;
+                        option.textContent = oficina.nombre;
+                        oficinaSelect.appendChild(option);
                     });
+                }).catch(function (error) {
+                    console.error('Error al cargar oficinas:', error);
+                });
             }
         });
-    });
 
-    document.getElementById('guardar').addEventListener('click', (e) => {
-        axios.get("{% url 'guardar_material_compras' %}")
-            .then((result) => {
-                if (result.data.data) {
-                    window.location.reload()
-                    console.log(result.data.data);
+        const tablaBody = document.querySelector("#tablaMateriales tbody");
+        const agregarBtn = document.getElementById("agregarFila");
+        const guardarTodoBtn = document.getElementById("guardarTodo");
 
-                }
+        let materiales = [];
 
-            }).catch((err) => {
-                console.log(err);
+        agregarBtn.addEventListener('click', function () {
+            const descripcion = document.getElementById("id_descripcion").value;
+            const unidad = document.getElementById("id_unidad_manejo").value;
+            const cantidad = document.getElementById("id_cantidad").value;
+            const costo = document.getElementById("id_costo_unitario").value;
+            const fecha = document.getElementById("id_fecha_compra").value;
+            const proveedorSelect = document.getElementById("id_proveedor");
+            const proveedorId = proveedorSelect.value;
+            const proveedorNombre = proveedorSelect.options[proveedorSelect.selectedIndex].text;
 
+            const unidadSelect = document.getElementById("id_unidad");
+            const unidadId = unidadSelect.value;
+            const unidadNombre = unidadSelect.options[unidadSelect.selectedIndex].text;
+            const item = materiales.length + 1
+            if (!descripcion || !unidad || !cantidad || !costo || !fecha) {
+                alert("Por favor completa todos los campos antes de agregar.");
+                return;
+            }
+
+            const index = materiales.length;
+            materiales.push({ item, descripcion, unidad, cantidad, costo, fecha, unidadId, proveedorId, proveedorNombre });
+
+            const fila = `
+            <tr>
+                 <td>${item}</td>
+                <td>${descripcion}</td>
+                <td>${unidad}</td>
+                <td>${cantidad}</td>
+                <td>${costo}</td>
+                 <td>${cantidad * costo}</td>
+                     <td>${proveedorNombre}</td>
+                         <td>${unidadNombre}</td>
+                <td>${fecha}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="eliminarFila(${index})">Eliminar</button></td>
+            </tr>
+        `;
+            tablaBody.insertAdjacentHTML("beforeend", fila);
+
+
+        });
+
+        window.eliminarFila = function (index) {
+            materiales.splice(index, 1);
+            tablaBody.innerHTML = '';
+            materiales.forEach((mat, i) => {
+                const fila = `
+                <tr>
+                       <td>${mat.item}</td>
+                    <td>${mat.descripcion}</td>
+                    <td>${mat.unidad}</td>
+                    <td>${mat.cantidad}</td>
+                    <td>${mat.costo}</td>
+                       <td>${mat.cantidad * mat.costo}</td>
+                     <td>${mat.proveedorNombre}</td>
+                         <td>${mat.unidadNombre}</td>
+                    <td>${mat.fecha}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="eliminarFila(${i})">Eliminar</button></td>
+                </tr>
+            `;
+                tablaBody.insertAdjacentHTML("beforeend", fila);
             });
-    });
+        }
 
-    function eliminar(id) {
-        axios.get(`eliminar/compra/${id}`)
-            .then((result) => {
-                if (result.data.data) {
-                    window.location.href = "{% url 'crear' %}"
+        guardarTodoBtn.addEventListener("click", function () {
+            if (materiales.length === 0) {
+                alert("No hay materiales para guardar.");
+                return;
+            }
+
+            axios.post("{% url 'crear' %}", {
+                materiales: materiales
+            }).then(response => {
+
+
+                alert("Materiales guardados correctamente.");
+                materiales = [];
+                tablaBody.innerHTML = '';
+                if (response.data.data == true) {
+                    console.log(response.data.numero);
+                    window.location.href = `entrada/${response.data.numero}`
                 }
-                console.log(result);
-
-            }).catch((err) => {
-                console.log(err);
-
+            }).catch(error => {
+                console.error("Error al guardar:", error);
             });
-
-
-    }
-
+        });
+    });
 </script>
 {% endblock js %}

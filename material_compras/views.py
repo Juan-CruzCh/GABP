@@ -1,46 +1,49 @@
 from datetime import datetime
+import json
 from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from material_compras.forms import  Form_material_compras 
 from material_compras.models import Matarial_compras, Numero_registro ,Pedido_compras
 from usuarios.models import Oficinas, Unidad
+from proveedor.models import Proveedor
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Sum
 
+@csrf_exempt
 def crear_material_compras(request):
 
     form_compras = Form_material_compras(request.POST or None)
-
+    print(request.method)
     if request.method == 'POST':
-       
-        if form_compras.is_valid():
-            try: 
-                secretaria = request.POST.get('secretaria')
-                unidad = request.POST.get('unidad')
-                oficina = request.POST.get('oficina')
-               # seleccionados = sum(bool(x) for x in [secretaria, unidad, oficina])
-                #if seleccionados != 1:
-                 #   messages.error(request, "Debe seleccionar solo una opción: secretaria, unidad o oficina.")
-               # else:
-                material = form_compras.save(commit=False)
-                if secretaria:
-                    material.secretaria_flag = True
-                elif unidad:
-                    material.unidad_flag = True
-                elif oficina:
-                    material.oficina_flag = True
-                material.save()
-                messages.success(request, "Material de compras y stock creado exitosamente.")
-       
-            except Exception  as error:
-                    print(error)
-                    messages.error(request, "Error inenperado")
-        else:
-            print('hola',form_compras.errors)     
-    listar= listar_compras()
+        data = json.loads(request.body)
+        materiales = data.get("materiales", [])
+        numero = Numero_registro.objects.create()
+        for mat in materiales:
+            proveedor = get_object_or_404(Proveedor, pk= mat["proveedorId"])
+            unidad = get_object_or_404(Unidad, pk= mat["unidadId"])
+            Matarial_compras.objects.create(
+                    item=mat["item"],
+                    descripcion=mat["descripcion"],
+                    unidad_manejo=mat["unidad"],
+                    cantidad=mat["cantidad"],
+                    costo_unitario=mat["costo"],
+                    fecha_compra=mat["fecha"],
+                    proveedor = proveedor,
+                    unidad= unidad,
+                    numero_registro= numero,
+                      estado_compra='COMPLETADO',
+                    costo_total= int(mat["cantidad"]) * float(mat["costo"])
+
+                )
+
+        return JsonResponse({"data": True,'numero':numero.pk})
+             
+
     context = {
         'form': form_compras,
-        'data':listar
+      
        
     }
     return render(request, 'material_compras/crear.html', context)
@@ -106,6 +109,7 @@ def cargar_oficinas(request):
 def guardar_material_compras(request):
     numero = Numero_registro.objects.create()
     material =Matarial_compras.objects.filter(estado_compra='PENDIENTE')
+    print(material)
     for m in material:
         m.estado_compra='COMPLETADO'
         m.numero_registro=numero
@@ -161,3 +165,12 @@ def listar_material_compras_entregadas(request):
         }
         return render(request, 'material_compras/entregados.html', context)
     return render(request, 'material_compras/entregados.html')
+def entrada(request, numero):
+    numero = get_object_or_404(Numero_registro, pk=numero)
+    material = Matarial_compras.objects.filter(numero_registro=numero)
+    total = material.aggregate(total=Sum('costo_total'))['total'] or 0
+    return render(request, 'material_compras/entrada.pdf.html', {
+        'materiales': material,
+        'numero': numero,
+        'total':total
+    })
